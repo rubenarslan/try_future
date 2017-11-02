@@ -12,13 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Future package
 Vignettes in package ‘future’:
 
-future-1-overview                                            A Future for R: A Comprehensive Overview (source, html)
-future-2-issues                                              A Future for R: Common Issues with Solutions (source, html)
-future-4-startup                                             A Future for R: Controlling Default Future Strategy (source, html)
-future-3-topologies                                          A Future for R: Future Topologies (source, html)
-
 ```{r load}
-vignette("future-1-overview")
+# vignette("future-1-overview")
 library(future)
 ```
 

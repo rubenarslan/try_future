@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Ruben Arslan" />
+
+<meta name="date" content="2017-10-30" />
+
+<title>future on ARC R server</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/FileSaver.min.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; } /* Keyword */
+code > span.dt { color: #dfdfbf; } /* DataType */
+code > span.dv { color: #dcdccc; } /* DecVal */
+code > span.bn { color: #dca3a3; } /* BaseN */
+code > span.fl { color: #c0bed1; } /* Float */
+code > span.ch { color: #dca3a3; } /* Char */
+code > span.st { color: #cc9393; } /* String */
+code > span.co { color: #7f9f7f; } /* Comment */
+code > span.ot { color: #efef8f; } /* Other */
+code > span.al { color: #ffcfaf; } /* Alert */
+code > span.fu { color: #efef8f; } /* Function */
+code > span.er { color: #c3bf9f; } /* Error */
+code > span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+code > span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code > span.sc { color: #dca3a3; } /* SpecialChar */
+code > span.vs { color: #cc9393; } /* VerbatimString */
+code > span.ss { color: #cc9393; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #f0dfaf; } /* ControlFlow */
+code > span.op { color: #f0efd0; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code > span.at { } /* Attribute */
+code > span.do { color: #7f9f7f; } /* Documentation */
+code > span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code > span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+div.sourceCode {
+  overflow-x: visible;
+}
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("future_ARC_Rserver.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Trying the future package</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Overview</a>
+</li>
+<li>
+  <a href="future_ARC_Rserver.html">ARC R Server</a>
+</li>
+<li>
+  <a href="future_MPIB_tardis.html">MPIB Tardis</a>
+</li>
+<li>
+  <a href="future_GWDG_SCC.html">GWDG SCC</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rubenarslan/try_future">
+    <span class="fa fa-github"></span>
+     
+    
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">future on ARC R server</h1>
+<h4 class="author"><em>Ruben Arslan</em></h4>
+<h4 class="date"><em>30 October 2017</em></h4>
+
+</div>
+
+
+<div id="future-package" class="section level2">
+<h2>Future package</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># vignette(&quot;future-1-overview&quot;)</span>
+<span class="kw">library</span>(future)</code></pre></div>
+</div>
+<div id="simple-local" class="section level2">
+<h2>Simple, local</h2>
+<p>A simple local example. Multiprocess starts whatever multiprocess tool is available on the platform (e.g. Multicore on Unix-based system, PSOCK cluster on Windows).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plan</span>(multiprocess)
+v <span class="op">%&lt;-%</span><span class="st"> </span>{
+ <span class="kw">cat</span>(<span class="st">&quot;Resolving...</span><span class="ch">\n</span><span class="st">&quot;</span>)
+ <span class="fl">3.14</span>
+}
+v</code></pre></div>
+<pre><code>## [1] 3.1</code></pre>
+</div>
+<div id="remote-arc-r-server-no-scheduler" class="section level2">
+<h2>Remote ARC R server (no scheduler)</h2>
+<p>This approach works for a server that is SSH-accessible and has R installed. To be able to SSH in without storing your password in plaintext somewhere, you’ll need to set up public key authentification. You do this by copying your public key to <code>~/.ssh/authorized_keys</code> on the server. If you’ve already generated a public key on your local machine, it should be in <code>~/.ssh/id_rsa.pub</code> or something similar. If you haven’t yet, Google how :-) You’ll have to do this for every server you want to use.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;future&quot;</span>) <span class="co"># this is the package we use to flexibly scale our processing</span>
+<span class="kw">library</span>(<span class="st">&quot;listenv&quot;</span>) <span class="co"># this is a helper package that allows us to assign the results to a list even if they come in at different times</span>
+
+## Set up access to remote login node
+login &lt;-<span class="st"> </span><span class="kw">tweak</span>(remote, <span class="dt">workers =</span> <span class="st">&quot;arslan@arc-srv-cpt7.mpib-berlin.mpg.de&quot;</span>) <span class="co"># Your username goes before the @</span>
+<span class="kw">plan</span>(login) <span class="co"># this tells the future package that we want to use a remote server for running our future operations</span>
+
+<span class="co"># but maybe the reason we want to shift to a server is not that we want to run a simple sequential operation there.</span>
+<span class="co"># maybe we want to take advantage of parallelisation and run the operation in parallel on multiple cores</span>
+## Specify future topology
+## login node -&gt; { cluster nodes } -&gt; { multiple cores }
+<span class="kw">plan</span>(<span class="kw">list</span>(
+  login,
+  multicore,
+  sequential
+))
+<span class="co"># demo(&quot;mandelbrot&quot;, package = &quot;future&quot;, ask = FALSE)</span>
+
+
+## (a) This will be evaluated on the cluster login computer
+x <span class="op">%&lt;-%</span><span class="st"> </span>{ <span class="co"># this operator binds the result of the promise/future to x</span>
+  thost &lt;-<span class="st"> </span><span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]]
+  tpid &lt;-<span class="st"> </span><span class="kw">Sys.getpid</span>()
+  y &lt;-<span class="st"> </span><span class="kw">listenv</span>()
+  <span class="cf">for</span> (task <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>) {
+    ## (b) This will be evaluated on a different core
+    y[[task]] <span class="op">%&lt;-%</span><span class="st"> </span>{
+      mhost &lt;-<span class="st"> </span><span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]]
+      mpid &lt;-<span class="st"> </span><span class="kw">Sys.getpid</span>()
+      z &lt;-<span class="st"> </span><span class="kw">listenv</span>()
+      <span class="cf">for</span> (jj <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {
+        ## (c) this will be evaluated sequentially on the same core
+        z[[jj]] <span class="op">%&lt;-%</span><span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">task =</span> task,
+                                <span class="dt">top.host =</span> thost, <span class="dt">top.pid =</span> tpid,
+                                <span class="dt">mid.host =</span> mhost, <span class="dt">mid.pid =</span> mpid,
+                                <span class="dt">host =</span> <span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]],
+                                <span class="dt">pid =</span> <span class="kw">Sys.getpid</span>())
+      }
+      <span class="kw">Reduce</span>(rbind, z)
+    }
+  }
+  <span class="kw">Reduce</span>(rbind, y)
+}
+
+<span class="kw">print</span>(x)</code></pre></div>
+<pre><code>##   task     top.host top.pid     mid.host mid.pid         host  pid
+## 1    1 arc-srv-cpt7    5342 arc-srv-cpt7    5353 arc-srv-cpt7 5353
+## 2    1 arc-srv-cpt7    5342 arc-srv-cpt7    5353 arc-srv-cpt7 5353
+## 3    2 arc-srv-cpt7    5342 arc-srv-cpt7    5354 arc-srv-cpt7 5354
+## 4    2 arc-srv-cpt7    5342 arc-srv-cpt7    5354 arc-srv-cpt7 5354
+## 5    3 arc-srv-cpt7    5342 arc-srv-cpt7    5355 arc-srv-cpt7 5355
+## 6    3 arc-srv-cpt7    5342 arc-srv-cpt7    5355 arc-srv-cpt7 5355
+## 7    4 arc-srv-cpt7    5342 arc-srv-cpt7    5356 arc-srv-cpt7 5356
+## 8    4 arc-srv-cpt7    5342 arc-srv-cpt7    5356 arc-srv-cpt7 5356</code></pre>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiZnV0dXJlIG9uIEFSQyBSIHNlcnZlciIKYXV0aG9yOiAiUnViZW4gQXJzbGFuIgpkYXRlOiAiMzAgT2N0b2JlciAyMDE3IgpvdXRwdXQ6IGh0bWxfZG9jdW1lbnQKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQpgYGAKCiMjIEZ1dHVyZSBwYWNrYWdlCgpgYGB7ciBsb2FkfQojIHZpZ25ldHRlKCJmdXR1cmUtMS1vdmVydmlldyIpCmxpYnJhcnkoZnV0dXJlKQpgYGAKCiMjIFNpbXBsZSwgbG9jYWwKCkEgc2ltcGxlIGxvY2FsIGV4YW1wbGUuIE11bHRpcHJvY2VzcyBzdGFydHMgd2hhdGV2ZXIgbXVsdGlwcm9jZXNzIHRvb2wgaXMgYXZhaWxhYmxlIG9uIHRoZSBwbGF0Zm9ybSAoZS5nLiBNdWx0aWNvcmUgb24gVW5peC1iYXNlZCBzeXN0ZW0sIFBTT0NLIGNsdXN0ZXIgb24gV2luZG93cykuCmBgYHtyfQpwbGFuKG11bHRpcHJvY2VzcykKdiAlPC0lIHsKIGNhdCgiUmVzb2x2aW5nLi4uXG4iKQogMy4xNAp9CnYKYGBgCgojIyBSZW1vdGUgQVJDIFIgc2VydmVyIChubyBzY2hlZHVsZXIpCgpUaGlzIGFwcHJvYWNoIHdvcmtzIGZvciBhIHNlcnZlciB0aGF0IGlzIFNTSC1hY2Nlc3NpYmxlIGFuZCBoYXMgUiBpbnN0YWxsZWQuIFRvIGJlIGFibGUgdG8gU1NIIGluIHdpdGhvdXQgc3RvcmluZyB5b3VyIHBhc3N3b3JkIGluIHBsYWludGV4dCBzb21ld2hlcmUsIHlvdSdsbCBuZWVkIHRvIHNldCB1cCBwdWJsaWMga2V5IGF1dGhlbnRpZmljYXRpb24uIFlvdSBkbyB0aGlzIGJ5IGNvcHlpbmcgeW91ciBwdWJsaWMga2V5IHRvIGB+Ly5zc2gvYXV0aG9yaXplZF9rZXlzYCBvbiB0aGUgc2VydmVyLiBJZiB5b3UndmUgYWxyZWFkeSBnZW5lcmF0ZWQgYSBwdWJsaWMga2V5IG9uIHlvdXIgbG9jYWwgbWFjaGluZSwgaXQgc2hvdWxkIGJlIGluIGB+Ly5zc2gvaWRfcnNhLnB1YmAgb3Igc29tZXRoaW5nIHNpbWlsYXIuIElmIHlvdSBoYXZlbid0IHlldCwgR29vZ2xlIGhvdyA6LSkKWW91J2xsIGhhdmUgdG8gZG8gdGhpcyBmb3IgZXZlcnkgc2VydmVyIHlvdSB3YW50IHRvIHVzZS4KCmBgYHtyfQpsaWJyYXJ5KCJmdXR1cmUiKSAjIHRoaXMgaXMgdGhlIHBhY2thZ2Ugd2UgdXNlIHRvIGZsZXhpYmx5IHNjYWxlIG91ciBwcm9jZXNzaW5nCmxpYnJhcnkoImxpc3RlbnYiKSAjIHRoaXMgaXMgYSBoZWxwZXIgcGFja2FnZSB0aGF0IGFsbG93cyB1cyB0byBhc3NpZ24gdGhlIHJlc3VsdHMgdG8gYSBsaXN0IGV2ZW4gaWYgdGhleSBjb21lIGluIGF0IGRpZmZlcmVudCB0aW1lcwoKIyMgU2V0IHVwIGFjY2VzcyB0byByZW1vdGUgbG9naW4gbm9kZQpsb2dpbiA8LSB0d2VhayhyZW1vdGUsIHdvcmtlcnMgPSAiYXJzbGFuQGFyYy1zcnYtY3B0Ny5tcGliLWJlcmxpbi5tcGcuZGUiKSAjIFlvdXIgdXNlcm5hbWUgZ29lcyBiZWZvcmUgdGhlIEAKcGxhbihsb2dpbikgIyB0aGlzIHRlbGxzIHRoZSBmdXR1cmUgcGFja2FnZSB0aGF0IHdlIHdhbnQgdG8gdXNlIGEgcmVtb3RlIHNlcnZlciBmb3IgcnVubmluZyBvdXIgZnV0dXJlIG9wZXJhdGlvbnMKCiMgYnV0IG1heWJlIHRoZSByZWFzb24gd2Ugd2FudCB0byBzaGlmdCB0byBhIHNlcnZlciBpcyBub3QgdGhhdCB3ZSB3YW50IHRvIHJ1biBhIHNpbXBsZSBzZXF1ZW50aWFsIG9wZXJhdGlvbiB0aGVyZS4KIyBtYXliZSB3ZSB3YW50IHRvIHRha2UgYWR2YW50YWdlIG9mIHBhcmFsbGVsaXNhdGlvbiBhbmQgcnVuIHRoZSBvcGVyYXRpb24gaW4gcGFyYWxsZWwgb24gbXVsdGlwbGUgY29yZXMKIyMgU3BlY2lmeSBmdXR1cmUgdG9wb2xvZ3kKIyMgbG9naW4gbm9kZSAtPiB7IGNsdXN0ZXIgbm9kZXMgfSAtPiB7IG11bHRpcGxlIGNvcmVzIH0KcGxhbihsaXN0KAogIGxvZ2luLAogIG11bHRpY29yZSwKICBzZXF1ZW50aWFsCikpCiMgZGVtbygibWFuZGVsYnJvdCIsIHBhY2thZ2UgPSAiZnV0dXJlIiwgYXNrID0gRkFMU0UpCgoKIyMgKGEpIFRoaXMgd2lsbCBiZSBldmFsdWF0ZWQgb24gdGhlIGNsdXN0ZXIgbG9naW4gY29tcHV0ZXIKeCAlPC0lIHsgIyB0aGlzIG9wZXJhdG9yIGJpbmRzIHRoZSByZXN1bHQgb2YgdGhlIHByb21pc2UvZnV0dXJlIHRvIHgKICB0aG9zdCA8LSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0KICB0cGlkIDwtIFN5cy5nZXRwaWQoKQogIHkgPC0gbGlzdGVudigpCiAgZm9yICh0YXNrIGluIDE6NCkgewogICAgIyMgKGIpIFRoaXMgd2lsbCBiZSBldmFsdWF0ZWQgb24gYSBkaWZmZXJlbnQgY29yZQogICAgeVtbdGFza11dICU8LSUgewogICAgICBtaG9zdCA8LSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0KICAgICAgbXBpZCA8LSBTeXMuZ2V0cGlkKCkKICAgICAgeiA8LSBsaXN0ZW52KCkKICAgICAgZm9yIChqaiBpbiAxOjIpIHsKICAgICAgICAjIyAoYykgdGhpcyB3aWxsIGJlIGV2YWx1YXRlZCBzZXF1ZW50aWFsbHkgb24gdGhlIHNhbWUgY29yZQogICAgICAgIHpbW2pqXV0gJTwtJSBkYXRhLmZyYW1lKHRhc2sgPSB0YXNrLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRvcC5ob3N0ID0gdGhvc3QsIHRvcC5waWQgPSB0cGlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1pZC5ob3N0ID0gbWhvc3QsIG1pZC5waWQgPSBtcGlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhvc3QgPSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGlkID0gU3lzLmdldHBpZCgpKQogICAgICB9CiAgICAgIFJlZHVjZShyYmluZCwgeikKICAgIH0KICB9CiAgUmVkdWNlKHJiaW5kLCB5KQp9CgpwcmludCh4KQpgYGAKCgo=</div>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
