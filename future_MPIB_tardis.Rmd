@@ -2,7 +2,9 @@
 title: "try"
 author: "Ruben Arslan"
 date: "30 October 2017"
-output: html_document
+output: 
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -17,22 +19,18 @@ Vignettes in package ‘future’:
 library(future)
 ```
 
-## Simple, local
-
-A simple local example. Multiprocess starts whatever multiprocess tool is available on the platform (e.g. Multicore on Unix-based system, PSOCK cluster on Windows).
-```{r}
-plan(multiprocess)
-v %<-% {
- cat("Resolving...\n")
- 3.14
-}
-v
-```
-
 ## Use R directly on the server (no scheduler)
 
 This approach works for a server that is SSH-accessible and has R and the __future__ package installed. To be able to SSH in without storing your password in plaintext somewhere, you'll need to set up public key authentification. You do this by copying your public key to `~/.ssh/authorized_keys` on the server. If you've already generated a public key on your local machine, it should be in `~/.ssh/id_rsa.pub` or something similar. If you haven't yet, Google how :-)
 You'll have to do this for every server you want to use.
+
+You can automatically do this using ([source](https://askubuntu.com/questions/4830/easiest-way-to-copy-ssh-keys-to-another-machine):
+
+```bash
+ssh-copy-id user@tardis.mpib-berlin.mpg.de
+```
+
+
 
 ```{r}
 library("future") # this is the package we use to flexibly scale our processing
@@ -79,7 +77,7 @@ x %<-% { # this operator binds the result of the promise/future to x
   Reduce(rbind, y)
 }
 
-print(x)
+x
 ```
 
 
@@ -100,11 +98,18 @@ login <- tweak(remote, workers = "arslan@tardis.mpib-berlin.mpg.de")
 qsub <- tweak(batchtools_torque, template = 'torque-lido.tmpl', 
             # workers = "export LSF_ENVDIR=/opt/lsf/conf",
                 resources = list(job.name = 'test1',
-                                log.file = 'blaaa2.log',
                                 queue = 'default',
-                                walltime = 10 * 60,
-                                memory = 1*1024,
+                                walltime = "0:1:0", # 1 minute runtime
+                                memory = 1,
                                 processes = 4))
+
+
+# we take our local template and write it to the server
+plan(login)
+tmpl = readLines("torque-lido.tmpl")
+value(future({   cat(tmpl, file = "torque-lido.tmpl", sep = "\n") }))
+all.equal(tmpl, value(future({   readLines("torque-lido.tmpl") })))
+
 
 ## Specify future topology
 ## login node -> { cluster nodes } -> { multiple cores }
@@ -114,12 +119,12 @@ plan(list(
   multicore
 ))
 
-tmpl = readLines("torque-lido.tmpl")
+
+
 x %<-% {
   thost <- Sys.info()[["nodename"]]
   tpid <- Sys.getpid()
   # transfer my local tmpl file
-  cat(tmpl, file = "torque-lido.tmpl", sep = "\n")
   y <- listenv()
   for (task in 1:4) {
     ## (b) This will be evaluated on a compute node on the cluster
@@ -141,8 +146,7 @@ x %<-% {
   Reduce(rbind, y)
 }
 
-print(x)
-
+x
 ```
 
 ## brms
@@ -159,11 +163,11 @@ login <- tweak(remote, workers = "arslan@tardis.mpib-berlin.mpg.de")
 qsub <- tweak(batchtools_torque, template = 'torque-lido.tmpl', 
             # workers = "export LSF_ENVDIR=/opt/lsf/conf",
                 resources = list(job.name = 'test1',
-                                log.file = 'blaaa2.log',
                                 queue = 'default',
-                                walltime = 10 * 60,
-                                memory = 10*1024,
+                                walltime = "1:0:0", # 1 hour runtime
+                                memory = 4,
                                 processes = 4))
+
 library(brms)
 
 ## Specify future topology
@@ -174,56 +178,37 @@ plan(list(
   multicore
 ))
 
-fit2 %<-% { # login to tardis
-  x %<-% { # bsub
-  library("brms")
-  brm(count ~ log_Age_c + log_Base4_c * Trt + (1|patient) + (1|obs), 
-      data = epilepsy, family = poisson(), 
-      chains = 4,
-      prior = c(prior(student_t(5,0,10), class = b),
-      prior(cauchy(0,2), class = sd)), 
-      future = TRUE #multicore
-      )
-    } %globals% FALSE
-  x
-  }
-
-fit2
-```
-
-### use brms with my own data on Tardis
-Also showing a different way to set up the future and pass along globals and packages.
-
-```{r}
-## Specify future topology
-## login node -> { cluster nodes } -> { multiple cores }
-plan(list(
-  login,
-  qsub,
-  multicore
-))
-
 mydata = data.frame(x = rnorm(100), y = rnorm(100))
 
-fit2 = future({
-  # login to tardis
-  # then send off bsub and wait for result
-  value(future({ # bsub
-  brm(x ~ y, 
-      data = mydata, 
-      chains = 4,
-      future = TRUE #multicore
-      )
-    }, globals = c("mydata"), packages = 'brms'
-  ))
-})
+model_name <- "mydata_model.rds"
+fit2 %<-% { # retrieve the model if it has been fit already
+  if (file.exists(model_name))
+    readRDS(model_name)
+}
+if (is.null(fit2)) {
+  fit2 %<-% { # login to tardis
+    model %<-% { # qsub
+      message(model_name)
+      brm(x ~ y, 
+        data = mydata, 
+        chains = 4,
+        future = TRUE #multicore
+        )
+    }
+    saveRDS(model, file = model_name) # in case we lose the connection, save the result
+    model
+  }
+}
 
-resolved(fit2)
-# while (!resolved(fit2)) {
-#   Sys.sleep(1)
-# }
-summary(value(fit2))
+# but the program will wait for it
+fit2
+
+# don't make your plots on the cluster, make em at home
+marginal_effects(fit2)
 ```
 
 
+You can track progress for your job here:
+https://tardis.mpib-berlin.mpg.de/jobs/
 
+(find your name, click the job)

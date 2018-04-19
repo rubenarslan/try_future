@@ -45,7 +45,7 @@ plan(list(
   bsub,
   multicore
 ))
-demo("mandelbrot", package = "future", ask = FALSE)
+# demo("mandelbrot", package = "future", ask = FALSE)
 
 x %<-% {
   thost <- Sys.info()[["nodename"]]
