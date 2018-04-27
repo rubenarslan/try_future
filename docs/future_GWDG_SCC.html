@@ -13,7 +13,7 @@
 
 <meta name="date" content="2017-10-30" />
 
-<title>try</title>
+<title>GWDG</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -291,7 +291,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">try</h1>
+<h1 class="title toc-ignore">GWDG</h1>
 <h4 class="author"><em>Ruben Arslan</em></h4>
 <h4 class="date"><em>30 October 2017</em></h4>
 
@@ -303,71 +303,77 @@ $(document).ready(function () {
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># vignette(&quot;future-1-overview&quot;)</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(future)</a></code></pre></div>
 </div>
+<div id="ssh-login" class="section level2">
+<h2>SSH login</h2>
+<p>This approach works for a server that is SSH-accessible and has R and the <strong>future</strong> package installed. To be able to SSH in without storing your password in plaintext somewhere, you’ll need to set up public key authentification. You do this by copying your public key to <code>~/.ssh/authorized_keys</code> on the server. If you’ve already generated a public key on your local machine, it should be in <code>~/.ssh/id_rsa.pub</code> or something similar. If you haven’t yet, Google how :-) You’ll have to do this for every server you want to use.</p>
+<p>You can automatically do this using (<a href="https://askubuntu.com/questions/4830/easiest-way-to-copy-ssh-keys-to-another-machine">source</a>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ex">ssh-copy-id</span> user@gwdu102.gwdg.de</a></code></pre></div>
+</div>
 <div id="gwdg-cluster" class="section level2">
 <h2>GWDG cluster</h2>
-<p>To run jobs on a cluster, you need to use a job scheduler. For this, you need a second package <code>future.batchtools</code>. Further, you need to copy a template file for job scripts to the server.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(<span class="st">&quot;future&quot;</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(<span class="st">&quot;listenv&quot;</span>)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">library</span>(<span class="st">&quot;future.batchtools&quot;</span>)</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">library</span>(debugme)</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">Sys.setenv</span>(<span class="dt">DEBUGME=</span><span class="st">&#39;batchtools&#39;</span>)</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">library</span>(batchtools)</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">## Set up access to remote login node</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># login_vpn &lt;- tweak(remote, workers = &quot;rarslan@login.gwdg.de&quot;) # doesn&#39;t work because R not installed</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">login &lt;-<span class="st"> </span><span class="kw">tweak</span>(remote, <span class="dt">workers =</span> <span class="st">&quot;gwdu102.gwdg.de&quot;</span>, <span class="dt">user =</span> <span class="st">&#39;rarslan&#39;</span>)</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">bsub &lt;-<span class="st"> </span><span class="kw">tweak</span>(batchtools_lsf, <span class="dt">template =</span> <span class="st">&#39;lsf.tmpl&#39;</span>, </a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">            <span class="co"># workers = &quot;export LSF_ENVDIR=/opt/lsf/conf&quot;,</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">                <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">job.name =</span> <span class="st">&#39;test1&#39;</span>,</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">                                <span class="dt">log.file =</span> <span class="st">&#39;blaaa2.log&#39;</span>,</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">                                <span class="dt">queue =</span> <span class="st">&#39;mpi&#39;</span>,</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">                                <span class="dt">walltime =</span> <span class="st">&#39;1:00&#39;</span>,</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17">                                <span class="dt">processes =</span> <span class="dv">4</span>))</a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19">## Specify future topology</a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">## login node -&gt; { cluster nodes } -&gt; { multiple cores }</a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="kw">plan</span>(<span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb2-22" data-line-number="22">  login,</a>
-<a class="sourceLine" id="cb2-23" data-line-number="23">  bsub,</a>
-<a class="sourceLine" id="cb2-24" data-line-number="24">  multicore</a>
-<a class="sourceLine" id="cb2-25" data-line-number="25">))</a>
-<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co"># demo(&quot;mandelbrot&quot;, package = &quot;future&quot;, ask = FALSE)</span></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28">x <span class="op">%&lt;-%</span><span class="st"> </span>{</a>
-<a class="sourceLine" id="cb2-29" data-line-number="29">  thost &lt;-<span class="st"> </span><span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]]</a>
-<a class="sourceLine" id="cb2-30" data-line-number="30">  tpid &lt;-<span class="st"> </span><span class="kw">Sys.getpid</span>()</a>
-<a class="sourceLine" id="cb2-31" data-line-number="31">  <span class="co"># set_gwdg_env()</span></a>
-<a class="sourceLine" id="cb2-32" data-line-number="32">  y &lt;-<span class="st"> </span><span class="kw">listenv</span>()</a>
-<a class="sourceLine" id="cb2-33" data-line-number="33">  <span class="cf">for</span> (task <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>) {</a>
-<a class="sourceLine" id="cb2-34" data-line-number="34">    ## (b) This will be evaluated on a compute node on the cluster</a>
-<a class="sourceLine" id="cb2-35" data-line-number="35">    y[[task]] <span class="op">%&lt;-%</span><span class="st"> </span>{</a>
-<a class="sourceLine" id="cb2-36" data-line-number="36">      mhost &lt;-<span class="st"> </span><span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]]</a>
-<a class="sourceLine" id="cb2-37" data-line-number="37">      mpid &lt;-<span class="st"> </span><span class="kw">Sys.getpid</span>()</a>
-<a class="sourceLine" id="cb2-38" data-line-number="38">      z &lt;-<span class="st"> </span><span class="kw">listenv</span>()</a>
-<a class="sourceLine" id="cb2-39" data-line-number="39">      <span class="cf">for</span> (jj <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {</a>
-<a class="sourceLine" id="cb2-40" data-line-number="40">        ## (c) These will be evaluated in separate processes on the same compute node</a>
-<a class="sourceLine" id="cb2-41" data-line-number="41">        z[[jj]] <span class="op">%&lt;-%</span><span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">task =</span> task,</a>
-<a class="sourceLine" id="cb2-42" data-line-number="42">                                <span class="dt">top.host =</span> thost, <span class="dt">top.pid =</span> tpid,</a>
-<a class="sourceLine" id="cb2-43" data-line-number="43">                                <span class="dt">mid.host =</span> mhost, <span class="dt">mid.pid =</span> mpid,</a>
-<a class="sourceLine" id="cb2-44" data-line-number="44">                                <span class="dt">host =</span> <span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]],</a>
-<a class="sourceLine" id="cb2-45" data-line-number="45">                                <span class="dt">pid =</span> <span class="kw">Sys.getpid</span>())</a>
-<a class="sourceLine" id="cb2-46" data-line-number="46">      }</a>
-<a class="sourceLine" id="cb2-47" data-line-number="47">      <span class="kw">Reduce</span>(rbind, z)</a>
-<a class="sourceLine" id="cb2-48" data-line-number="48">    }</a>
-<a class="sourceLine" id="cb2-49" data-line-number="49">  }</a>
-<a class="sourceLine" id="cb2-50" data-line-number="50">  <span class="kw">Reduce</span>(rbind, y)</a>
-<a class="sourceLine" id="cb2-51" data-line-number="51">}</a>
-<a class="sourceLine" id="cb2-52" data-line-number="52"></a>
-<a class="sourceLine" id="cb2-53" data-line-number="53"><span class="kw">print</span>(x)</a></code></pre></div>
-<pre><code>##   task top.host top.pid mid.host mid.pid   host   pid
-## 1    1  gwdu102    8997   dfa015    4389 dfa015  4400
-## 2    1  gwdu102    8997   dfa015    4389 dfa015  4413
-## 3    2  gwdu102    8997   dfa013   23086 dfa013 23097
-## 4    2  gwdu102    8997   dfa013   23086 dfa013 23098
-## 5    3  gwdu102    8997   dfa006    5635 dfa006  5646
-## 6    3  gwdu102    8997   dfa006    5635 dfa006  5675
-## 7    4  gwdu102    8997   dmp053    8015 dmp053  8026
-## 8    4  gwdu102    8997   dmp053    8015 dmp053  8039</code></pre>
+<p>To run jobs on a cluster, you need to use a job scheduler. For this, you need a second package <code>future.batchtools</code>. Further, you need to copy a template file for job scripts to the server and maybe configure your <code>.profile</code> file.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">library</span>(<span class="st">&quot;future&quot;</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(<span class="st">&quot;listenv&quot;</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">library</span>(<span class="st">&quot;future.batchtools&quot;</span>)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">library</span>(debugme)</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">Sys.setenv</span>(<span class="dt">DEBUGME=</span><span class="st">&#39;batchtools&#39;</span>)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">library</span>(batchtools)</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">## Set up access to remote login node</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co"># login_vpn &lt;- tweak(remote, workers = &quot;rarslan@login.gwdg.de&quot;) # doesn&#39;t work because R not installed</span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">login &lt;-<span class="st"> </span><span class="kw">tweak</span>(remote, <span class="dt">workers =</span> <span class="st">&quot;gwdu102.gwdg.de&quot;</span>, <span class="dt">user =</span> <span class="st">&#39;rarslan&#39;</span>)</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">bsub &lt;-<span class="st"> </span><span class="kw">tweak</span>(batchtools_lsf, <span class="dt">template =</span> <span class="st">&#39;lsf.tmpl&#39;</span>, </a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">            <span class="co"># workers = &quot;export LSF_ENVDIR=/opt/lsf/conf&quot;,</span></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">                <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">job.name =</span> <span class="st">&#39;test1&#39;</span>,</a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">                                <span class="dt">log.file =</span> <span class="st">&#39;blaaa2.log&#39;</span>,</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15">                                <span class="dt">queue =</span> <span class="st">&#39;mpi&#39;</span>,</a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">                                <span class="dt">walltime =</span> <span class="st">&#39;1:00&#39;</span>,</a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">                                <span class="dt">processes =</span> <span class="dv">4</span>))</a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb3-19" data-line-number="19">## Specify future topology</a>
+<a class="sourceLine" id="cb3-20" data-line-number="20">## login node -&gt; { cluster nodes } -&gt; { multiple cores }</a>
+<a class="sourceLine" id="cb3-21" data-line-number="21"><span class="kw">plan</span>(<span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb3-22" data-line-number="22">  login,</a>
+<a class="sourceLine" id="cb3-23" data-line-number="23">  bsub,</a>
+<a class="sourceLine" id="cb3-24" data-line-number="24">  multicore</a>
+<a class="sourceLine" id="cb3-25" data-line-number="25">))</a>
+<a class="sourceLine" id="cb3-26" data-line-number="26"><span class="co"># demo(&quot;mandelbrot&quot;, package = &quot;future&quot;, ask = FALSE)</span></a>
+<a class="sourceLine" id="cb3-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb3-28" data-line-number="28">x <span class="op">%&lt;-%</span><span class="st"> </span>{</a>
+<a class="sourceLine" id="cb3-29" data-line-number="29">  thost &lt;-<span class="st"> </span><span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]]</a>
+<a class="sourceLine" id="cb3-30" data-line-number="30">  tpid &lt;-<span class="st"> </span><span class="kw">Sys.getpid</span>()</a>
+<a class="sourceLine" id="cb3-31" data-line-number="31">  <span class="co"># set_gwdg_env()</span></a>
+<a class="sourceLine" id="cb3-32" data-line-number="32">  y &lt;-<span class="st"> </span><span class="kw">listenv</span>()</a>
+<a class="sourceLine" id="cb3-33" data-line-number="33">  <span class="cf">for</span> (task <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>) {</a>
+<a class="sourceLine" id="cb3-34" data-line-number="34">    ## (b) This will be evaluated on a compute node on the cluster</a>
+<a class="sourceLine" id="cb3-35" data-line-number="35">    y[[task]] <span class="op">%&lt;-%</span><span class="st"> </span>{</a>
+<a class="sourceLine" id="cb3-36" data-line-number="36">      mhost &lt;-<span class="st"> </span><span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]]</a>
+<a class="sourceLine" id="cb3-37" data-line-number="37">      mpid &lt;-<span class="st"> </span><span class="kw">Sys.getpid</span>()</a>
+<a class="sourceLine" id="cb3-38" data-line-number="38">      z &lt;-<span class="st"> </span><span class="kw">listenv</span>()</a>
+<a class="sourceLine" id="cb3-39" data-line-number="39">      <span class="cf">for</span> (jj <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {</a>
+<a class="sourceLine" id="cb3-40" data-line-number="40">        ## (c) These will be evaluated in separate processes on the same compute node</a>
+<a class="sourceLine" id="cb3-41" data-line-number="41">        z[[jj]] <span class="op">%&lt;-%</span><span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">task =</span> task,</a>
+<a class="sourceLine" id="cb3-42" data-line-number="42">                                <span class="dt">top.host =</span> thost, <span class="dt">top.pid =</span> tpid,</a>
+<a class="sourceLine" id="cb3-43" data-line-number="43">                                <span class="dt">mid.host =</span> mhost, <span class="dt">mid.pid =</span> mpid,</a>
+<a class="sourceLine" id="cb3-44" data-line-number="44">                                <span class="dt">host =</span> <span class="kw">Sys.info</span>()[[<span class="st">&quot;nodename&quot;</span>]],</a>
+<a class="sourceLine" id="cb3-45" data-line-number="45">                                <span class="dt">pid =</span> <span class="kw">Sys.getpid</span>())</a>
+<a class="sourceLine" id="cb3-46" data-line-number="46">      }</a>
+<a class="sourceLine" id="cb3-47" data-line-number="47">      <span class="kw">Reduce</span>(rbind, z)</a>
+<a class="sourceLine" id="cb3-48" data-line-number="48">    }</a>
+<a class="sourceLine" id="cb3-49" data-line-number="49">  }</a>
+<a class="sourceLine" id="cb3-50" data-line-number="50">  <span class="kw">Reduce</span>(rbind, y)</a>
+<a class="sourceLine" id="cb3-51" data-line-number="51">}</a>
+<a class="sourceLine" id="cb3-52" data-line-number="52"></a>
+<a class="sourceLine" id="cb3-53" data-line-number="53"><span class="kw">print</span>(x)</a></code></pre></div>
+<pre><code>##   task top.host top.pid mid.host mid.pid    host   pid
+## 1    1  gwdu102   17709   dfa013   31749  dfa013 31760
+## 2    1  gwdu102   17709   dfa013   31749  dfa013 31761
+## 3    2  gwdu102   17709   dfa011     757  dfa011   769
+## 4    2  gwdu102   17709   dfa011     757  dfa011   770
+## 5    3  gwdu102   17709   dfa015   13884  dfa015 13895
+## 6    3  gwdu102   17709   dfa015   13884  dfa015 13896
+## 7    4  gwdu102   17709  gwdc146   14381 gwdc146 14392
+## 8    4  gwdu102   17709  gwdc146   14381 gwdc146 14393</code></pre>
 </div>
 <div id="brms" class="section level2">
 <h2>brms</h2>
@@ -375,61 +381,61 @@ $(document).ready(function () {
 <div id="use-brms-with-my-own-data-on-lsf" class="section level3">
 <h3>use brms with my own data on LSF</h3>
 <p>Also showing a different way to set up the future and pass along globals and packages.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">login &lt;-<span class="st"> </span><span class="kw">tweak</span>(remote, <span class="dt">workers =</span> <span class="st">&quot;gwdu102.gwdg.de&quot;</span>, <span class="dt">user =</span> <span class="st">&#39;rarslan&#39;</span>)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">bsub &lt;-<span class="st"> </span><span class="kw">tweak</span>(batchtools_lsf, <span class="dt">template =</span> <span class="st">&#39;lsf.tmpl&#39;</span>, </a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">            <span class="co"># workers = &quot;export LSF_ENVDIR=/opt/lsf/conf&quot;,</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">                <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">job.name =</span> <span class="st">&#39;brms_test&#39;</span>,</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">                                <span class="dt">log.file =</span> <span class="st">&#39;brms_test.log&#39;</span>,</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">                                <span class="dt">queue =</span> <span class="st">&#39;mpi&#39;</span>,</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">                                <span class="dt">walltime =</span> <span class="st">&#39;2:00&#39;</span>,</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">                                <span class="dt">processes =</span> <span class="dv">4</span>))</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">library</span>(brms)</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">## Specify future topology</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">## login node -&gt; { cluster node (compile brms model) } -&gt; { run chains on multiple cores }</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="kw">plan</span>(<span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14">  login,</a>
-<a class="sourceLine" id="cb4-15" data-line-number="15">  bsub,</a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">  multicore</a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">))</a>
-<a class="sourceLine" id="cb4-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb4-20" data-line-number="20">mydata =<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="kw">rnorm</span>(<span class="dv">100</span>), <span class="dt">y =</span> <span class="kw">rnorm</span>(<span class="dv">100</span>))</a>
-<a class="sourceLine" id="cb4-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb4-22" data-line-number="22">model_name &lt;-<span class="st"> &quot;mydata_model.rds&quot;</span></a>
-<a class="sourceLine" id="cb4-23" data-line-number="23">fit2 <span class="op">%&lt;-%</span><span class="st"> </span>{ <span class="co"># retrieve the model if it has been fit already</span></a>
-<a class="sourceLine" id="cb4-24" data-line-number="24">  <span class="cf">if</span> (<span class="kw">file.exists</span>(model_name))</a>
-<a class="sourceLine" id="cb4-25" data-line-number="25">    <span class="kw">readRDS</span>(model_name)</a>
-<a class="sourceLine" id="cb4-26" data-line-number="26">}</a>
-<a class="sourceLine" id="cb4-27" data-line-number="27"><span class="cf">if</span> (<span class="kw">is.null</span>(fit2)) {</a>
-<a class="sourceLine" id="cb4-28" data-line-number="28">  fit2 <span class="op">%&lt;-%</span><span class="st"> </span>{ <span class="co"># login to tardis</span></a>
-<a class="sourceLine" id="cb4-29" data-line-number="29">    model <span class="op">%&lt;-%</span><span class="st"> </span>{ <span class="co"># qsub</span></a>
-<a class="sourceLine" id="cb4-30" data-line-number="30">      <span class="kw">message</span>(model_name)</a>
-<a class="sourceLine" id="cb4-31" data-line-number="31">      <span class="kw">brm</span>(x <span class="op">~</span><span class="st"> </span>y, </a>
-<a class="sourceLine" id="cb4-32" data-line-number="32">        <span class="dt">data =</span> mydata, </a>
-<a class="sourceLine" id="cb4-33" data-line-number="33">        <span class="dt">chains =</span> <span class="dv">4</span>,</a>
-<a class="sourceLine" id="cb4-34" data-line-number="34">        <span class="dt">future =</span> <span class="ot">TRUE</span> <span class="co">#multicore</span></a>
-<a class="sourceLine" id="cb4-35" data-line-number="35">        )</a>
-<a class="sourceLine" id="cb4-36" data-line-number="36">    }</a>
-<a class="sourceLine" id="cb4-37" data-line-number="37">    <span class="kw">saveRDS</span>(model, <span class="dt">file =</span> model_name) <span class="co"># in case we lose the connection, save the result</span></a>
-<a class="sourceLine" id="cb4-38" data-line-number="38">    model</a>
-<a class="sourceLine" id="cb4-39" data-line-number="39">  }</a>
-<a class="sourceLine" id="cb4-40" data-line-number="40">}</a>
-<a class="sourceLine" id="cb4-41" data-line-number="41"></a>
-<a class="sourceLine" id="cb4-42" data-line-number="42"><span class="co"># but the program will wait for it</span></a>
-<a class="sourceLine" id="cb4-43" data-line-number="43">fit2</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">login &lt;-<span class="st"> </span><span class="kw">tweak</span>(remote, <span class="dt">workers =</span> <span class="st">&quot;gwdu102.gwdg.de&quot;</span>, <span class="dt">user =</span> <span class="st">&#39;rarslan&#39;</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">bsub &lt;-<span class="st"> </span><span class="kw">tweak</span>(batchtools_lsf, <span class="dt">template =</span> <span class="st">&#39;lsf.tmpl&#39;</span>, </a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">            <span class="co"># workers = &quot;export LSF_ENVDIR=/opt/lsf/conf&quot;,</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">                <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">job.name =</span> <span class="st">&#39;brms_test&#39;</span>,</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">                                <span class="dt">log.file =</span> <span class="st">&#39;brms_test.log&#39;</span>,</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">                                <span class="dt">queue =</span> <span class="st">&#39;mpi&#39;</span>,</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">                                <span class="dt">walltime =</span> <span class="st">&#39;2:00&#39;</span>,</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">                                <span class="dt">processes =</span> <span class="dv">4</span>))</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="kw">library</span>(brms)</a></code></pre></div>
+<pre><code>## Warning: replacing previous import &#39;rstan::loo&#39; by &#39;loo::loo&#39; when loading
+## &#39;brms&#39;</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">## Specify future topology</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">## login node -&gt; { cluster node (compile brms model) } -&gt; { run chains on multiple cores }</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw">plan</span>(<span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">  login,</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">  bsub,</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">  multicore</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">))</a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">mydata =<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="kw">rnorm</span>(<span class="dv">100</span>), <span class="dt">y =</span> <span class="kw">rnorm</span>(<span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb7-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">model_name &lt;-<span class="st"> &quot;mydata_model.rds&quot;</span></a>
+<a class="sourceLine" id="cb7-13" data-line-number="13">fit2 <span class="op">%&lt;-%</span><span class="st"> </span>{ <span class="co"># retrieve the model if it has been fit already</span></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">  <span class="cf">if</span> (<span class="kw">file.exists</span>(model_name))</a>
+<a class="sourceLine" id="cb7-15" data-line-number="15">    <span class="kw">readRDS</span>(model_name)</a>
+<a class="sourceLine" id="cb7-16" data-line-number="16">}</a>
+<a class="sourceLine" id="cb7-17" data-line-number="17"><span class="cf">if</span> (<span class="kw">is.null</span>(fit2)) {</a>
+<a class="sourceLine" id="cb7-18" data-line-number="18">  fit2 <span class="op">%&lt;-%</span><span class="st"> </span>{ <span class="co"># login to tardis</span></a>
+<a class="sourceLine" id="cb7-19" data-line-number="19">    model <span class="op">%&lt;-%</span><span class="st"> </span>{ <span class="co"># qsub</span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20">      <span class="kw">message</span>(model_name)</a>
+<a class="sourceLine" id="cb7-21" data-line-number="21">      <span class="kw">brm</span>(x <span class="op">~</span><span class="st"> </span>y, </a>
+<a class="sourceLine" id="cb7-22" data-line-number="22">        <span class="dt">data =</span> mydata, </a>
+<a class="sourceLine" id="cb7-23" data-line-number="23">        <span class="dt">chains =</span> <span class="dv">4</span>,</a>
+<a class="sourceLine" id="cb7-24" data-line-number="24">        <span class="dt">future =</span> <span class="ot">TRUE</span> <span class="co">#multicore</span></a>
+<a class="sourceLine" id="cb7-25" data-line-number="25">        )</a>
+<a class="sourceLine" id="cb7-26" data-line-number="26">    }</a>
+<a class="sourceLine" id="cb7-27" data-line-number="27">    <span class="kw">saveRDS</span>(model, <span class="dt">file =</span> model_name) <span class="co"># in case we lose the connection, save the result</span></a>
+<a class="sourceLine" id="cb7-28" data-line-number="28">    model</a>
+<a class="sourceLine" id="cb7-29" data-line-number="29">  }</a>
+<a class="sourceLine" id="cb7-30" data-line-number="30">}</a>
+<a class="sourceLine" id="cb7-31" data-line-number="31"></a>
+<a class="sourceLine" id="cb7-32" data-line-number="32"><span class="co"># but the program will wait for it</span></a>
+<a class="sourceLine" id="cb7-33" data-line-number="33">fit2</a></code></pre></div>
 <pre><code>##  Family: gaussian 
 ##   Links: mu = identity; sigma = identity 
 ## Formula: x ~ y 
 ##    Data: mydata (Number of observations: 100) 
-## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1; 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 ##          total post-warmup samples = 4000
-##     ICs: LOO = NA; WAIC = NA; R2 = NA
-##  
+## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
-## Intercept    -0.09      0.10    -0.29     0.11       3263 1.00
-## y             0.17      0.09    -0.02     0.36       4000 1.00
+## Intercept    -0.09      0.10    -0.29     0.11       3325 1.00
+## y             0.17      0.09    -0.02     0.36       3924 1.00
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
@@ -438,14 +444,14 @@ $(document).ready(function () {
 ## Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 ## is a crude measure of effective sample size, and Rhat is the potential 
 ## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># don&#39;t make your plots on the cluster, make em at home</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">marginal_effects</span>(fit2)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># don&#39;t make your plots on the cluster, make em at home</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">marginal_effects</span>(fit2)</a></code></pre></div>
 <p><img src="future_GWDG_SCC_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 </div>
 <div id="local-env" class="section level2">
 <h2>local env</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
 <pre><code>## R version 3.4.4 RC (2018-03-08 r74373)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
 ## Running under: macOS Sierra 10.12.6
@@ -461,7 +467,7 @@ $(document).ready(function () {
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] brms_2.2.0              ggplot2_2.2.1           Rcpp_0.12.16           
+## [1] brms_2.2.2              ggplot2_2.2.1           Rcpp_0.12.16           
 ## [4] batchtools_0.9.8        data.table_1.10.4-3     debugme_1.1.0          
 ## [7] future.batchtools_0.6.0 listenv_0.7.0           future_1.8.0           
 ## 
@@ -488,8 +494,8 @@ $(document).ready(function () {
 ## [58] igraph_1.2.1         miniUI_0.1.1         labeling_0.3        
 ## [61] base64enc_0.1-3      rmarkdown_1.9        gtable_0.2.0        
 ## [64] codetools_0.2-15     inline_0.3.14        abind_1.4-5         
-## [67] reshape2_1.4.3       markdown_0.8         R6_2.2.2            
-## [70] gridExtra_2.3        rstantools_1.4.0     zoo_1.8-1           
+## [67] markdown_0.8         reshape2_1.4.3       R6_2.2.2            
+## [70] gridExtra_2.3        rstantools_1.5.0     zoo_1.8-1           
 ## [73] knitr_1.20           bridgesampling_0.4-0 dplyr_0.7.4         
 ## [76] shinythemes_1.1.1    bindr_0.1.1          shinystan_2.4.0     
 ## [79] rprojroot_1.3-2      stringi_1.1.7        parallel_3.4.4      
@@ -497,9 +503,9 @@ $(document).ready(function () {
 </div>
 <div id="remote-env" class="section level2">
 <h2>remote env</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">plan</span>(login)</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw">value</span>(<span class="kw">future</span>({<span class="kw">sessionInfo</span>() }))</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">plan</span>(login)</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw">value</span>(<span class="kw">future</span>({<span class="kw">sessionInfo</span>() }))</a></code></pre></div>
 <pre><code>## R version 3.4.1 (2017-06-30)
 ## Platform: x86_64-redhat-linux-gnu (64-bit)
 ## Running under: Scientific Linux 7.3 (Nitrogen)
@@ -516,9 +522,33 @@ $(document).ready(function () {
 ## loaded via a namespace (and not attached):
 ## [1] compiler_3.4.1   parallel_3.4.1   listenv_0.7.0    codetools_0.2-15
 ## [5] digest_0.6.12    globals_0.11.0   future_1.8.0</code></pre>
+<div id="profile" class="section level3">
+<h3>.profile</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">value</span>(<span class="kw">future</span>({ readr<span class="op">::</span><span class="kw">read_file</span>(<span class="st">&quot;.profile&quot;</span>) })))</a></code></pre></div>
+<pre><code>## export LSF_SERVERDIR=/opt/lsf/10.1/linux2.6-glibc2.3-x86_64/etc
+## export LSF_ENVDIR=/opt/lsf/conf</code></pre>
+</div>
+<div id="lsf.tmpl" class="section level3">
+<h3>lsf.tmpl</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">value</span>(<span class="kw">future</span>({ readr<span class="op">::</span><span class="kw">read_file</span>(<span class="st">&quot;lsf.tmpl&quot;</span>) })))</a></code></pre></div>
+<pre><code>## ## Default resources can be set in your .batchtools.conf.R by defining the variable
+## ## &#39;default.resources&#39; as a named list.
+## 
+## #BSUB -J &lt;%= job.name %&gt;                             # Name of the job
+## #BSUB -o &lt;%= log.file %&gt;                             # Output is sent to logfile, stdout + stderr by default
+## #BSUB -q &lt;%= resources$queue %&gt;                      # Job queue
+## #BSUB -W &lt;%= resources$walltime %&gt;                   # Walltime in minutes
+## #BSUB -R span[hosts=1]                               # use only one host
+## #BSUB -n &lt;%= resources$processes %&gt;                  # number of processes
+## 
+## ## Export value of DEBUGME environemnt var to slave
+## export DEBUGME=&lt;%= Sys.getenv(&quot;DEBUGME&quot;) %&gt;
+## 
+## Rscript -e &#39;batchtools::doJobCollection(&quot;&lt;%= uri %&gt;&quot;)&#39;</code></pre>
+</div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAidHJ5IgphdXRob3I6ICJSdWJlbiBBcnNsYW4iCmRhdGU6ICIzMCBPY3RvYmVyIDIwMTciCm91dHB1dDogaHRtbF9kb2N1bWVudAotLS0KCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpCmBgYAoKIyMgRnV0dXJlIHBhY2thZ2UKCmBgYHtyIGxvYWR9CiMgdmlnbmV0dGUoImZ1dHVyZS0xLW92ZXJ2aWV3IikKbGlicmFyeShmdXR1cmUpCmBgYAoKIyMgR1dERyBjbHVzdGVyClRvIHJ1biBqb2JzIG9uIGEgY2x1c3RlciwgeW91IG5lZWQgdG8gdXNlIGEgam9iIHNjaGVkdWxlci4gRm9yIHRoaXMsIHlvdSBuZWVkIGEgc2Vjb25kIHBhY2thZ2UgYGZ1dHVyZS5iYXRjaHRvb2xzYC4gRnVydGhlciwgeW91IG5lZWQgdG8gY29weSBhIHRlbXBsYXRlIGZpbGUgZm9yIGpvYiBzY3JpcHRzIHRvIHRoZSBzZXJ2ZXIuCgpgYGB7cn0KbGlicmFyeSgiZnV0dXJlIikKbGlicmFyeSgibGlzdGVudiIpCmxpYnJhcnkoImZ1dHVyZS5iYXRjaHRvb2xzIikKbGlicmFyeShkZWJ1Z21lKQpTeXMuc2V0ZW52KERFQlVHTUU9J2JhdGNodG9vbHMnKQpsaWJyYXJ5KGJhdGNodG9vbHMpCgojIyBTZXQgdXAgYWNjZXNzIHRvIHJlbW90ZSBsb2dpbiBub2RlCiMgbG9naW5fdnBuIDwtIHR3ZWFrKHJlbW90ZSwgd29ya2VycyA9ICJyYXJzbGFuQGxvZ2luLmd3ZGcuZGUiKSAjIGRvZXNuJ3Qgd29yayBiZWNhdXNlIFIgbm90IGluc3RhbGxlZApsb2dpbiA8LSB0d2VhayhyZW1vdGUsIHdvcmtlcnMgPSAiZ3dkdTEwMi5nd2RnLmRlIiwgdXNlciA9ICdyYXJzbGFuJykKYnN1YiA8LSB0d2VhayhiYXRjaHRvb2xzX2xzZiwgdGVtcGxhdGUgPSAnbHNmLnRtcGwnLCAKICAgICAgICAgICAgIyB3b3JrZXJzID0gImV4cG9ydCBMU0ZfRU5WRElSPS9vcHQvbHNmL2NvbmYiLAogICAgICAgICAgICAgICAgcmVzb3VyY2VzID0gbGlzdChqb2IubmFtZSA9ICd0ZXN0MScsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbG9nLmZpbGUgPSAnYmxhYWEyLmxvZycsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcXVldWUgPSAnbXBpJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB3YWxsdGltZSA9ICcxOjAwJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwcm9jZXNzZXMgPSA0KSkKCiMjIFNwZWNpZnkgZnV0dXJlIHRvcG9sb2d5CiMjIGxvZ2luIG5vZGUgLT4geyBjbHVzdGVyIG5vZGVzIH0gLT4geyBtdWx0aXBsZSBjb3JlcyB9CnBsYW4obGlzdCgKICBsb2dpbiwKICBic3ViLAogIG11bHRpY29yZQopKQojIGRlbW8oIm1hbmRlbGJyb3QiLCBwYWNrYWdlID0gImZ1dHVyZSIsIGFzayA9IEZBTFNFKQoKeCAlPC0lIHsKICB0aG9zdCA8LSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0KICB0cGlkIDwtIFN5cy5nZXRwaWQoKQogICMgc2V0X2d3ZGdfZW52KCkKICB5IDwtIGxpc3RlbnYoKQogIGZvciAodGFzayBpbiAxOjQpIHsKICAgICMjIChiKSBUaGlzIHdpbGwgYmUgZXZhbHVhdGVkIG9uIGEgY29tcHV0ZSBub2RlIG9uIHRoZSBjbHVzdGVyCiAgICB5W1t0YXNrXV0gJTwtJSB7CiAgICAgIG1ob3N0IDwtIFN5cy5pbmZvKClbWyJub2RlbmFtZSJdXQogICAgICBtcGlkIDwtIFN5cy5nZXRwaWQoKQogICAgICB6IDwtIGxpc3RlbnYoKQogICAgICBmb3IgKGpqIGluIDE6MikgewogICAgICAgICMjIChjKSBUaGVzZSB3aWxsIGJlIGV2YWx1YXRlZCBpbiBzZXBhcmF0ZSBwcm9jZXNzZXMgb24gdGhlIHNhbWUgY29tcHV0ZSBub2RlCiAgICAgICAgeltbampdXSAlPC0lIGRhdGEuZnJhbWUodGFzayA9IHRhc2ssCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdG9wLmhvc3QgPSB0aG9zdCwgdG9wLnBpZCA9IHRwaWQsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWlkLmhvc3QgPSBtaG9zdCwgbWlkLnBpZCA9IG1waWQsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaG9zdCA9IFN5cy5pbmZvKClbWyJub2RlbmFtZSJdXSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwaWQgPSBTeXMuZ2V0cGlkKCkpCiAgICAgIH0KICAgICAgUmVkdWNlKHJiaW5kLCB6KQogICAgfQogIH0KICBSZWR1Y2UocmJpbmQsIHkpCn0KCnByaW50KHgpCgpgYGAKCiMjIGJybXMKYnJtcyBpcyBhIEJheWVzaWFuIHJlZ3Jlc3Npb24gbW9kZWxsaW5nIHNvZnR3YXJlLiBCZWNhdXNlIHdlIG9mdGVuIHJ1biBtdWx0aXBsZSBjaGFpbnMgaW4gYnJtcyB0byBhc3Nlc3MgY29udmVyZ2VuY2UgYW5kIG9idGFpbiBzYW1wbGVzLCBtb3JlIHF1aWNrbHksIHBhcmFsbGVsaXNhdGlvbiBpcyBiZW5lZmljaWFsLiBicm1zIGhhcyBpbnRlcm5hbCBzdXBwb3J0IGZvciBmdXR1cmVzLiBCeSBzZXR0aW5nIGl0cyBgZnV0dXJlYCBhcmd1bWVudCB0byB0cnVlLCBpdCB3aWxsIHJ1biB0aGUgY2hhaW5zIGFjY29yZGluZyB0byBgcGxhbmAuCkJlY2F1c2UgcnVubmluZyBzdWNoIGEgbW9kZWwgY2FuIHRha2UgYSBsb3Qgb2YgdGltZSwgaXQgaXMgYmVuZWZpY2lhbCB0byBvZmZsb2FkIGl0IHRvIGEgcmVtb3RlIHNlcnZlciBvciBjbHVzdGVyLgoKIyMjIHVzZSBicm1zIHdpdGggbXkgb3duIGRhdGEgb24gTFNGCkFsc28gc2hvd2luZyBhIGRpZmZlcmVudCB3YXkgdG8gc2V0IHVwIHRoZSBmdXR1cmUgYW5kIHBhc3MgYWxvbmcgZ2xvYmFscyBhbmQgcGFja2FnZXMuCgpgYGB7cn0KbG9naW4gPC0gdHdlYWsocmVtb3RlLCB3b3JrZXJzID0gImd3ZHUxMDIuZ3dkZy5kZSIsIHVzZXIgPSAncmFyc2xhbicpCmJzdWIgPC0gdHdlYWsoYmF0Y2h0b29sc19sc2YsIHRlbXBsYXRlID0gJ2xzZi50bXBsJywgCiAgICAgICAgICAgICMgd29ya2VycyA9ICJleHBvcnQgTFNGX0VOVkRJUj0vb3B0L2xzZi9jb25mIiwKICAgICAgICAgICAgICAgIHJlc291cmNlcyA9IGxpc3Qoam9iLm5hbWUgPSAnYnJtc190ZXN0JywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBsb2cuZmlsZSA9ICdicm1zX3Rlc3QubG9nJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBxdWV1ZSA9ICdtcGknLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHdhbGx0aW1lID0gJzI6MDAnLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHByb2Nlc3NlcyA9IDQpKQpsaWJyYXJ5KGJybXMpCgojIyBTcGVjaWZ5IGZ1dHVyZSB0b3BvbG9neQojIyBsb2dpbiBub2RlIC0+IHsgY2x1c3RlciBub2RlIChjb21waWxlIGJybXMgbW9kZWwpIH0gLT4geyBydW4gY2hhaW5zIG9uIG11bHRpcGxlIGNvcmVzIH0KcGxhbihsaXN0KAogIGxvZ2luLAogIGJzdWIsCiAgbXVsdGljb3JlCikpCgoKbXlkYXRhID0gZGF0YS5mcmFtZSh4ID0gcm5vcm0oMTAwKSwgeSA9IHJub3JtKDEwMCkpCgptb2RlbF9uYW1lIDwtICJteWRhdGFfbW9kZWwucmRzIgpmaXQyICU8LSUgeyAjIHJldHJpZXZlIHRoZSBtb2RlbCBpZiBpdCBoYXMgYmVlbiBmaXQgYWxyZWFkeQogIGlmIChmaWxlLmV4aXN0cyhtb2RlbF9uYW1lKSkKICAgIHJlYWRSRFMobW9kZWxfbmFtZSkKfQppZiAoaXMubnVsbChmaXQyKSkgewogIGZpdDIgJTwtJSB7ICMgbG9naW4gdG8gdGFyZGlzCiAgICBtb2RlbCAlPC0lIHsgIyBxc3ViCiAgICAgIG1lc3NhZ2UobW9kZWxfbmFtZSkKICAgICAgYnJtKHggfiB5LCAKICAgICAgICBkYXRhID0gbXlkYXRhLCAKICAgICAgICBjaGFpbnMgPSA0LAogICAgICAgIGZ1dHVyZSA9IFRSVUUgI211bHRpY29yZQogICAgICAgICkKICAgIH0KICAgIHNhdmVSRFMobW9kZWwsIGZpbGUgPSBtb2RlbF9uYW1lKSAjIGluIGNhc2Ugd2UgbG9zZSB0aGUgY29ubmVjdGlvbiwgc2F2ZSB0aGUgcmVzdWx0CiAgICBtb2RlbAogIH0KfQoKIyBidXQgdGhlIHByb2dyYW0gd2lsbCB3YWl0IGZvciBpdApmaXQyCgojIGRvbid0IG1ha2UgeW91ciBwbG90cyBvbiB0aGUgY2x1c3RlciwgbWFrZSBlbSBhdCBob21lCm1hcmdpbmFsX2VmZmVjdHMoZml0MikKYGBgCgojIyBsb2NhbCBlbnYKYGBge3J9CnNlc3Npb25JbmZvKCkKYGBgCgojIyByZW1vdGUgZW52CmBgYHtyfQpwbGFuKGxvZ2luKQoKdmFsdWUoZnV0dXJlKHtzZXNzaW9uSW5mbygpIH0pKQpgYGAKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiR1dERyIKYXV0aG9yOiAiUnViZW4gQXJzbGFuIgpkYXRlOiAiMzAgT2N0b2JlciAyMDE3IgpvdXRwdXQ6IGh0bWxfZG9jdW1lbnQKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQpgYGAKCiMjIEZ1dHVyZSBwYWNrYWdlCgpgYGB7ciBsb2FkfQojIHZpZ25ldHRlKCJmdXR1cmUtMS1vdmVydmlldyIpCmxpYnJhcnkoZnV0dXJlKQpgYGAKCiMjIFNTSCBsb2dpbgpUaGlzIGFwcHJvYWNoIHdvcmtzIGZvciBhIHNlcnZlciB0aGF0IGlzIFNTSC1hY2Nlc3NpYmxlIGFuZCBoYXMgUiBhbmQgdGhlIF9fZnV0dXJlX18gcGFja2FnZSBpbnN0YWxsZWQuIFRvIGJlIGFibGUgdG8gU1NIIGluIHdpdGhvdXQgc3RvcmluZyB5b3VyIHBhc3N3b3JkIGluIHBsYWludGV4dCBzb21ld2hlcmUsIHlvdSdsbCBuZWVkIHRvIHNldCB1cCBwdWJsaWMga2V5IGF1dGhlbnRpZmljYXRpb24uIFlvdSBkbyB0aGlzIGJ5IGNvcHlpbmcgeW91ciBwdWJsaWMga2V5IHRvIGB+Ly5zc2gvYXV0aG9yaXplZF9rZXlzYCBvbiB0aGUgc2VydmVyLiBJZiB5b3UndmUgYWxyZWFkeSBnZW5lcmF0ZWQgYSBwdWJsaWMga2V5IG9uIHlvdXIgbG9jYWwgbWFjaGluZSwgaXQgc2hvdWxkIGJlIGluIGB+Ly5zc2gvaWRfcnNhLnB1YmAgb3Igc29tZXRoaW5nIHNpbWlsYXIuIElmIHlvdSBoYXZlbid0IHlldCwgR29vZ2xlIGhvdyA6LSkKWW91J2xsIGhhdmUgdG8gZG8gdGhpcyBmb3IgZXZlcnkgc2VydmVyIHlvdSB3YW50IHRvIHVzZS4KCllvdSBjYW4gYXV0b21hdGljYWxseSBkbyB0aGlzIHVzaW5nIChbc291cmNlXShodHRwczovL2Fza3VidW50dS5jb20vcXVlc3Rpb25zLzQ4MzAvZWFzaWVzdC13YXktdG8tY29weS1zc2gta2V5cy10by1hbm90aGVyLW1hY2hpbmUpOgoKYGBgYmFzaApzc2gtY29weS1pZCB1c2VyQGd3ZHUxMDIuZ3dkZy5kZQpgYGAKCgojIyBHV0RHIGNsdXN0ZXIKVG8gcnVuIGpvYnMgb24gYSBjbHVzdGVyLCB5b3UgbmVlZCB0byB1c2UgYSBqb2Igc2NoZWR1bGVyLiBGb3IgdGhpcywgeW91IG5lZWQgYSBzZWNvbmQgcGFja2FnZSBgZnV0dXJlLmJhdGNodG9vbHNgLiBGdXJ0aGVyLCB5b3UgbmVlZCB0byBjb3B5IGEgdGVtcGxhdGUgZmlsZSBmb3Igam9iIHNjcmlwdHMgdG8gdGhlIHNlcnZlciBhbmQgbWF5YmUgY29uZmlndXJlIHlvdXIgYC5wcm9maWxlYCBmaWxlLgoKYGBge3J9CmxpYnJhcnkoImZ1dHVyZSIpCmxpYnJhcnkoImxpc3RlbnYiKQpsaWJyYXJ5KCJmdXR1cmUuYmF0Y2h0b29scyIpCmxpYnJhcnkoZGVidWdtZSkKU3lzLnNldGVudihERUJVR01FPSdiYXRjaHRvb2xzJykKbGlicmFyeShiYXRjaHRvb2xzKQoKIyMgU2V0IHVwIGFjY2VzcyB0byByZW1vdGUgbG9naW4gbm9kZQojIGxvZ2luX3ZwbiA8LSB0d2VhayhyZW1vdGUsIHdvcmtlcnMgPSAicmFyc2xhbkBsb2dpbi5nd2RnLmRlIikgIyBkb2Vzbid0IHdvcmsgYmVjYXVzZSBSIG5vdCBpbnN0YWxsZWQKbG9naW4gPC0gdHdlYWsocmVtb3RlLCB3b3JrZXJzID0gImd3ZHUxMDIuZ3dkZy5kZSIsIHVzZXIgPSAncmFyc2xhbicpCmJzdWIgPC0gdHdlYWsoYmF0Y2h0b29sc19sc2YsIHRlbXBsYXRlID0gJ2xzZi50bXBsJywgCiAgICAgICAgICAgICMgd29ya2VycyA9ICJleHBvcnQgTFNGX0VOVkRJUj0vb3B0L2xzZi9jb25mIiwKICAgICAgICAgICAgICAgIHJlc291cmNlcyA9IGxpc3Qoam9iLm5hbWUgPSAndGVzdDEnLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGxvZy5maWxlID0gJ2JsYWFhMi5sb2cnLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHF1ZXVlID0gJ21waScsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgd2FsbHRpbWUgPSAnMTowMCcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJvY2Vzc2VzID0gNCkpCgojIyBTcGVjaWZ5IGZ1dHVyZSB0b3BvbG9neQojIyBsb2dpbiBub2RlIC0+IHsgY2x1c3RlciBub2RlcyB9IC0+IHsgbXVsdGlwbGUgY29yZXMgfQpwbGFuKGxpc3QoCiAgbG9naW4sCiAgYnN1YiwKICBtdWx0aWNvcmUKKSkKIyBkZW1vKCJtYW5kZWxicm90IiwgcGFja2FnZSA9ICJmdXR1cmUiLCBhc2sgPSBGQUxTRSkKCnggJTwtJSB7CiAgdGhvc3QgPC0gU3lzLmluZm8oKVtbIm5vZGVuYW1lIl1dCiAgdHBpZCA8LSBTeXMuZ2V0cGlkKCkKICAjIHNldF9nd2RnX2VudigpCiAgeSA8LSBsaXN0ZW52KCkKICBmb3IgKHRhc2sgaW4gMTo0KSB7CiAgICAjIyAoYikgVGhpcyB3aWxsIGJlIGV2YWx1YXRlZCBvbiBhIGNvbXB1dGUgbm9kZSBvbiB0aGUgY2x1c3RlcgogICAgeVtbdGFza11dICU8LSUgewogICAgICBtaG9zdCA8LSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0KICAgICAgbXBpZCA8LSBTeXMuZ2V0cGlkKCkKICAgICAgeiA8LSBsaXN0ZW52KCkKICAgICAgZm9yIChqaiBpbiAxOjIpIHsKICAgICAgICAjIyAoYykgVGhlc2Ugd2lsbCBiZSBldmFsdWF0ZWQgaW4gc2VwYXJhdGUgcHJvY2Vzc2VzIG9uIHRoZSBzYW1lIGNvbXB1dGUgbm9kZQogICAgICAgIHpbW2pqXV0gJTwtJSBkYXRhLmZyYW1lKHRhc2sgPSB0YXNrLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRvcC5ob3N0ID0gdGhvc3QsIHRvcC5waWQgPSB0cGlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1pZC5ob3N0ID0gbWhvc3QsIG1pZC5waWQgPSBtcGlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhvc3QgPSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGlkID0gU3lzLmdldHBpZCgpKQogICAgICB9CiAgICAgIFJlZHVjZShyYmluZCwgeikKICAgIH0KICB9CiAgUmVkdWNlKHJiaW5kLCB5KQp9CgpwcmludCh4KQoKYGBgCgojIyBicm1zCmJybXMgaXMgYSBCYXllc2lhbiByZWdyZXNzaW9uIG1vZGVsbGluZyBzb2Z0d2FyZS4gQmVjYXVzZSB3ZSBvZnRlbiBydW4gbXVsdGlwbGUgY2hhaW5zIGluIGJybXMgdG8gYXNzZXNzIGNvbnZlcmdlbmNlIGFuZCBvYnRhaW4gc2FtcGxlcywgbW9yZSBxdWlja2x5LCBwYXJhbGxlbGlzYXRpb24gaXMgYmVuZWZpY2lhbC4gYnJtcyBoYXMgaW50ZXJuYWwgc3VwcG9ydCBmb3IgZnV0dXJlcy4gQnkgc2V0dGluZyBpdHMgYGZ1dHVyZWAgYXJndW1lbnQgdG8gdHJ1ZSwgaXQgd2lsbCBydW4gdGhlIGNoYWlucyBhY2NvcmRpbmcgdG8gYHBsYW5gLgpCZWNhdXNlIHJ1bm5pbmcgc3VjaCBhIG1vZGVsIGNhbiB0YWtlIGEgbG90IG9mIHRpbWUsIGl0IGlzIGJlbmVmaWNpYWwgdG8gb2ZmbG9hZCBpdCB0byBhIHJlbW90ZSBzZXJ2ZXIgb3IgY2x1c3Rlci4KCiMjIyB1c2UgYnJtcyB3aXRoIG15IG93biBkYXRhIG9uIExTRgpBbHNvIHNob3dpbmcgYSBkaWZmZXJlbnQgd2F5IHRvIHNldCB1cCB0aGUgZnV0dXJlIGFuZCBwYXNzIGFsb25nIGdsb2JhbHMgYW5kIHBhY2thZ2VzLgoKYGBge3J9CmxvZ2luIDwtIHR3ZWFrKHJlbW90ZSwgd29ya2VycyA9ICJnd2R1MTAyLmd3ZGcuZGUiLCB1c2VyID0gJ3JhcnNsYW4nKQpic3ViIDwtIHR3ZWFrKGJhdGNodG9vbHNfbHNmLCB0ZW1wbGF0ZSA9ICdsc2YudG1wbCcsIAogICAgICAgICAgICAjIHdvcmtlcnMgPSAiZXhwb3J0IExTRl9FTlZESVI9L29wdC9sc2YvY29uZiIsCiAgICAgICAgICAgICAgICByZXNvdXJjZXMgPSBsaXN0KGpvYi5uYW1lID0gJ2JybXNfdGVzdCcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbG9nLmZpbGUgPSAnYnJtc190ZXN0LmxvZycsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcXVldWUgPSAnbXBpJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB3YWxsdGltZSA9ICcyOjAwJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwcm9jZXNzZXMgPSA0KSkKbGlicmFyeShicm1zKQoKIyMgU3BlY2lmeSBmdXR1cmUgdG9wb2xvZ3kKIyMgbG9naW4gbm9kZSAtPiB7IGNsdXN0ZXIgbm9kZSAoY29tcGlsZSBicm1zIG1vZGVsKSB9IC0+IHsgcnVuIGNoYWlucyBvbiBtdWx0aXBsZSBjb3JlcyB9CnBsYW4obGlzdCgKICBsb2dpbiwKICBic3ViLAogIG11bHRpY29yZQopKQoKCm15ZGF0YSA9IGRhdGEuZnJhbWUoeCA9IHJub3JtKDEwMCksIHkgPSBybm9ybSgxMDApKQoKbW9kZWxfbmFtZSA8LSAibXlkYXRhX21vZGVsLnJkcyIKZml0MiAlPC0lIHsgIyByZXRyaWV2ZSB0aGUgbW9kZWwgaWYgaXQgaGFzIGJlZW4gZml0IGFscmVhZHkKICBpZiAoZmlsZS5leGlzdHMobW9kZWxfbmFtZSkpCiAgICByZWFkUkRTKG1vZGVsX25hbWUpCn0KaWYgKGlzLm51bGwoZml0MikpIHsKICBmaXQyICU8LSUgeyAjIGxvZ2luIHRvIHRhcmRpcwogICAgbW9kZWwgJTwtJSB7ICMgcXN1YgogICAgICBtZXNzYWdlKG1vZGVsX25hbWUpCiAgICAgIGJybSh4IH4geSwgCiAgICAgICAgZGF0YSA9IG15ZGF0YSwgCiAgICAgICAgY2hhaW5zID0gNCwKICAgICAgICBmdXR1cmUgPSBUUlVFICNtdWx0aWNvcmUKICAgICAgICApCiAgICB9CiAgICBzYXZlUkRTKG1vZGVsLCBmaWxlID0gbW9kZWxfbmFtZSkgIyBpbiBjYXNlIHdlIGxvc2UgdGhlIGNvbm5lY3Rpb24sIHNhdmUgdGhlIHJlc3VsdAogICAgbW9kZWwKICB9Cn0KCiMgYnV0IHRoZSBwcm9ncmFtIHdpbGwgd2FpdCBmb3IgaXQKZml0MgoKIyBkb24ndCBtYWtlIHlvdXIgcGxvdHMgb24gdGhlIGNsdXN0ZXIsIG1ha2UgZW0gYXQgaG9tZQptYXJnaW5hbF9lZmZlY3RzKGZpdDIpCmBgYAoKIyMgbG9jYWwgZW52CmBgYHtyfQpzZXNzaW9uSW5mbygpCmBgYAoKIyMgcmVtb3RlIGVudgpgYGB7cn0KcGxhbihsb2dpbikKCnZhbHVlKGZ1dHVyZSh7c2Vzc2lvbkluZm8oKSB9KSkKYGBgCgojIyMgLnByb2ZpbGUKYGBge3J9CmNhdCh2YWx1ZShmdXR1cmUoeyByZWFkcjo6cmVhZF9maWxlKCIucHJvZmlsZSIpIH0pKSkKYGBgCgojIyMgbHNmLnRtcGwKYGBge3J9CmNhdCh2YWx1ZShmdXR1cmUoeyByZWFkcjo6cmVhZF9maWxlKCJsc2YudG1wbCIpIH0pKSkKYGBgCgo=</div>
 
 
 

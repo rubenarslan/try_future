@@ -212,3 +212,28 @@ You can track progress for your job here:
 https://tardis.mpib-berlin.mpg.de/jobs/
 
 (find your name, click the job)
+
+
+
+## local env
+```{r}
+sessionInfo()
+```
+
+## remote env
+```{r}
+plan(login)
+
+value(future({sessionInfo() }))
+```
+
+### .profile
+```{r}
+value(future({ readr::read_file(".profile") }))
+```
+
+### lsf.tmpl
+```{r}
+value(future({ readr::read_file("lsf.tmpl") }))
+```
+

@@ -1,5 +1,5 @@
 ---
-title: "try"
+title: "GWDG"
 author: "Ruben Arslan"
 date: "30 October 2017"
 output: html_document
@@ -16,8 +16,19 @@ knitr::opts_chunk$set(echo = TRUE)
 library(future)
 ```
 
+## SSH login
+This approach works for a server that is SSH-accessible and has R and the __future__ package installed. To be able to SSH in without storing your password in plaintext somewhere, you'll need to set up public key authentification. You do this by copying your public key to `~/.ssh/authorized_keys` on the server. If you've already generated a public key on your local machine, it should be in `~/.ssh/id_rsa.pub` or something similar. If you haven't yet, Google how :-)
+You'll have to do this for every server you want to use.
+
+You can automatically do this using ([source](https://askubuntu.com/questions/4830/easiest-way-to-copy-ssh-keys-to-another-machine):
+
+```bash
+ssh-copy-id user@gwdu102.gwdg.de
+```
+
+
 ## GWDG cluster
-To run jobs on a cluster, you need to use a job scheduler. For this, you need a second package `future.batchtools`. Further, you need to copy a template file for job scripts to the server.
+To run jobs on a cluster, you need to use a job scheduler. For this, you need a second package `future.batchtools`. Further, you need to copy a template file for job scripts to the server and maybe configure your `.profile` file.
 
 ```{r}
 library("future")
@@ -142,5 +153,15 @@ sessionInfo()
 plan(login)
 
 value(future({sessionInfo() }))
+```
+
+### .profile
+```{r}
+cat(value(future({ readr::read_file(".profile") })))
+```
+
+### lsf.tmpl
+```{r}
+cat(value(future({ readr::read_file("lsf.tmpl") })))
 ```
 
