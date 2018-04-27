@@ -80,7 +80,9 @@ print(x)
 brms is a Bayesian regression modelling software. Because we often run multiple chains in brms to assess convergence and obtain samples, more quickly, parallelisation is beneficial. brms has internal support for futures. By setting its `future` argument to true, it will run the chains according to `plan`.
 Because running such a model can take a lot of time, it is beneficial to offload it to a remote server or cluster.
 
-## use brms on LSF
+### use brms with my own data on LSF
+Also showing a different way to set up the future and pass along globals and packages.
+
 ```{r}
 login <- tweak(remote, workers = "gwdu102.gwdg.de", user = 'rarslan')
 bsub <- tweak(batchtools_lsf, template = 'lsf.tmpl', 
@@ -100,56 +102,45 @@ plan(list(
   multicore
 ))
 
-fit2 %<-% { # login to gwdg
-  x %<-% { # bsub
-  library("brms")
-  brm(count ~ log_Age_c + log_Base4_c * Trt + (1|patient) + (1|obs), 
-      data = epilepsy, family = poisson(), 
-      chains = 4,
-      prior = c(prior(student_t(5,0,10), class = b),
-      prior(cauchy(0,2), class = sd)), 
-      future = TRUE #multicore
-      )
-    } %globals% FALSE
-  x
-  }
-
-fit2
-```
-
-### use brms with my own data on LSF
-Also showing a different way to set up the future and pass along globals and packages.
-
-```{r}
-## Specify future topology
-## login node -> { cluster nodes } -> { multiple cores }
-plan(list(
-  login,
-  bsub,
-  multicore
-))
 
 mydata = data.frame(x = rnorm(100), y = rnorm(100))
 
-fit2 = future({
-  # login to gwdg
-  # then send off bsub and wait for result
-  value(future({ # bsub
-  brm(x ~ y, 
-      data = mydata, 
-      chains = 4,
-      future = TRUE #multicore
-      )
-    }, globals = c("mydata"), packages = 'brms'
-  ))
-})
+model_name <- "mydata_model.rds"
+fit2 %<-% { # retrieve the model if it has been fit already
+  if (file.exists(model_name))
+    readRDS(model_name)
+}
+if (is.null(fit2)) {
+  fit2 %<-% { # login to tardis
+    model %<-% { # qsub
+      message(model_name)
+      brm(x ~ y, 
+        data = mydata, 
+        chains = 4,
+        future = TRUE #multicore
+        )
+    }
+    saveRDS(model, file = model_name) # in case we lose the connection, save the result
+    model
+  }
+}
 
-resolved(fit2)
-# while (!resolved(fit2)) {
-#   Sys.sleep(1)
-# }
-summary(value(fit2))
+# but the program will wait for it
+fit2
+
+# don't make your plots on the cluster, make em at home
+marginal_effects(fit2)
 ```
 
+## local env
+```{r}
+sessionInfo()
+```
 
+## remote env
+```{r}
+plan(login)
+
+value(future({sessionInfo() }))
+```
 

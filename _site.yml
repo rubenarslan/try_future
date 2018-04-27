@@ -1,27 +1,39 @@
-name: "future"
-output_dir: "docs"
+name: future
+output_dir: docs
 navbar:
-  title: "Trying the future package"
+  title: Trying the future package
   left:
-    - text: "Overview"
-      href: index.html
-    - text: "ARC R Server"
-      href: future_ARC_Rserver.html
-    - text: "MPIB Tardis"
-      href: future_MPIB_tardis.html
-    - text: "GWDG SCC"
-      href: future_GWDG_SCC.html
+  - text: Overview
+    href: index.html
+  - text: ARC R Server
+    href: future_ARC_Rserver.html
+  - text: MPIB Tardis
+    href: future_MPIB_tardis.html
+  - text: GWDG SCC
+    href: future_GWDG_SCC.html
   right:
-    - text: ""
-      icon: fa-github
-      href: https://github.com/rubenarslan/try_future
+  - text: ''
+    icon: fa-github
+    href: https://github.com/rubenarslan/try_future
 output:
   html_document:
-    self_contained: false
     theme: paper
-    code_folding: "hide"
-    df_print: "tibble"
-    code_download: true
-    highlight: "zenburn"
+    code_folding: hide
+    df_print: tibble
+    code_download: yes
+    highlight: zenburn
     css: styles.css
-exclude: ["packrat", "*.rda", "*.pdf", "*.dta", "*.csv", "geo", "item_tables", "*.csl", "*.bibtex", "*.xlsx"]
+    lib_dir: site_libs
+    self_contained: no
+exclude:
+- packrat
+- '*.rda'
+- '*.pdf'
+- '*.dta'
+- '*.csv'
+- geo
+- item_tables
+- '*.csl'
+- '*.bibtex'
+- '*.xlsx'
+
