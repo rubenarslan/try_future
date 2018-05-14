@@ -366,14 +366,14 @@ $(document).ready(function () {
 <a class="sourceLine" id="cb3-52" data-line-number="52"></a>
 <a class="sourceLine" id="cb3-53" data-line-number="53"><span class="kw">print</span>(x)</a></code></pre></div>
 <pre><code>##   task top.host top.pid mid.host mid.pid    host   pid
-## 1    1  gwdu102   17709   dfa013   31749  dfa013 31760
-## 2    1  gwdu102   17709   dfa013   31749  dfa013 31761
-## 3    2  gwdu102   17709   dfa011     757  dfa011   769
-## 4    2  gwdu102   17709   dfa011     757  dfa011   770
-## 5    3  gwdu102   17709   dfa015   13884  dfa015 13895
-## 6    3  gwdu102   17709   dfa015   13884  dfa015 13896
-## 7    4  gwdu102   17709  gwdc146   14381 gwdc146 14392
-## 8    4  gwdu102   17709  gwdc146   14381 gwdc146 14393</code></pre>
+## 1    1  gwdu102   17583  gwdc046   20004 gwdc046 20027
+## 2    1  gwdu102   17583  gwdc046   20004 gwdc046 20197
+## 3    2  gwdu102   17583  gwdc001   31456 gwdc001 31741
+## 4    2  gwdu102   17583  gwdc001   31456 gwdc001 31908
+## 5    3  gwdu102   17583  gwdc125   12922 gwdc125 13143
+## 6    3  gwdu102   17583  gwdc125   12922 gwdc125 13224
+## 7    4  gwdu102   17583  gwdc048   25738 gwdc048 26021
+## 8    4  gwdu102   17583  gwdc048   25738 gwdc048 26022</code></pre>
 </div>
 <div id="brms" class="section level2">
 <h2>brms</h2>
@@ -429,9 +429,10 @@ $(document).ready(function () {
 ##   Links: mu = identity; sigma = identity 
 ## Formula: x ~ y 
 ##    Data: mydata (Number of observations: 100) 
-## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1; 
 ##          total post-warmup samples = 4000
-## 
+##     ICs: LOO = NA; WAIC = NA; R2 = NA
+##  
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
 ## Intercept    -0.09      0.10    -0.29     0.11       3325 1.00
@@ -467,7 +468,7 @@ $(document).ready(function () {
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] brms_2.2.2              ggplot2_2.2.1           Rcpp_0.12.16           
+## [1] brms_2.2.0              ggplot2_2.2.1           Rcpp_0.12.16           
 ## [4] batchtools_0.9.8        data.table_1.10.4-3     debugme_1.1.0          
 ## [7] future.batchtools_0.6.0 listenv_0.7.0           future_1.8.0           
 ## 
@@ -488,8 +489,8 @@ $(document).ready(function () {
 ## [40] nlme_3.1-131.1       xts_0.10-1           colourpicker_1.0    
 ## [43] rsconnect_0.8.8      tools_3.4.4          loo_2.0.0           
 ## [46] prettyunits_1.0.2    matrixStats_0.53.1   stringr_1.3.0       
-## [49] munsell_0.4.3        bindrcpp_0.2         compiler_3.4.4      
-## [52] rlang_0.2.0          grid_3.4.4           ggridges_0.4.1      
+## [49] munsell_0.4.3        bindrcpp_0.2.2       compiler_3.4.4      
+## [52] rlang_0.2.0          grid_3.4.4           ggridges_0.5.0      
 ## [55] rappdirs_0.3.1       htmlwidgets_1.0      crosstalk_1.0.0     
 ## [58] igraph_1.2.1         miniUI_0.1.1         labeling_0.3        
 ## [61] base64enc_0.1-3      rmarkdown_1.9        gtable_0.2.0        
@@ -525,30 +526,35 @@ $(document).ready(function () {
 <div id="profile" class="section level3">
 <h3>.profile</h3>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">value</span>(<span class="kw">future</span>({ readr<span class="op">::</span><span class="kw">read_file</span>(<span class="st">&quot;.profile&quot;</span>) })))</a></code></pre></div>
-<pre><code>## export LSF_SERVERDIR=/opt/lsf/10.1/linux2.6-glibc2.3-x86_64/etc
-## export LSF_ENVDIR=/opt/lsf/conf</code></pre>
+<pre><code>export LSF_SERVERDIR=/opt/lsf/10.1/linux2.6-glibc2.3-x86_64/etc
+export LSF_ENVDIR=/opt/lsf/conf</code></pre>
+</div>
+<div id="bashrc" class="section level3">
+<h3>.bashrc</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">value</span>(<span class="kw">future</span>({ readr<span class="op">::</span><span class="kw">read_file</span>(<span class="st">&quot;.bashrc&quot;</span>) })))</a></code></pre></div>
+<pre><code>source /etc/profile.d/lsf.sh</code></pre>
 </div>
 <div id="lsf.tmpl" class="section level3">
 <h3>lsf.tmpl</h3>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">value</span>(<span class="kw">future</span>({ readr<span class="op">::</span><span class="kw">read_file</span>(<span class="st">&quot;lsf.tmpl&quot;</span>) })))</a></code></pre></div>
-<pre><code>## ## Default resources can be set in your .batchtools.conf.R by defining the variable
-## ## &#39;default.resources&#39; as a named list.
-## 
-## #BSUB -J &lt;%= job.name %&gt;                             # Name of the job
-## #BSUB -o &lt;%= log.file %&gt;                             # Output is sent to logfile, stdout + stderr by default
-## #BSUB -q &lt;%= resources$queue %&gt;                      # Job queue
-## #BSUB -W &lt;%= resources$walltime %&gt;                   # Walltime in minutes
-## #BSUB -R span[hosts=1]                               # use only one host
-## #BSUB -n &lt;%= resources$processes %&gt;                  # number of processes
-## 
-## ## Export value of DEBUGME environemnt var to slave
-## export DEBUGME=&lt;%= Sys.getenv(&quot;DEBUGME&quot;) %&gt;
-## 
-## Rscript -e &#39;batchtools::doJobCollection(&quot;&lt;%= uri %&gt;&quot;)&#39;</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">value</span>(<span class="kw">future</span>({ readr<span class="op">::</span><span class="kw">read_file</span>(<span class="st">&quot;lsf.tmpl&quot;</span>) })))</a></code></pre></div>
+<pre><code>## Default resources can be set in your .batchtools.conf.R by defining the variable
+## &#39;default.resources&#39; as a named list.
+
+#BSUB -J &lt;%= job.name %&gt;                             # Name of the job
+#BSUB -o &lt;%= log.file %&gt;                             # Output is sent to logfile, stdout + stderr by default
+#BSUB -q &lt;%= resources$queue %&gt;                      # Job queue
+#BSUB -W &lt;%= resources$walltime %&gt;                   # Walltime in minutes
+#BSUB -R span[hosts=1]                               # use only one host
+#BSUB -n &lt;%= resources$processes %&gt;                  # number of processes
+
+## Export value of DEBUGME environemnt var to slave
+export DEBUGME=&lt;%= Sys.getenv(&quot;DEBUGME&quot;) %&gt;
+
+Rscript -e &#39;batchtools::doJobCollection(&quot;&lt;%= uri %&gt;&quot;)&#39;</code></pre>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiR1dERyIKYXV0aG9yOiAiUnViZW4gQXJzbGFuIgpkYXRlOiAiMzAgT2N0b2JlciAyMDE3IgpvdXRwdXQ6IGh0bWxfZG9jdW1lbnQKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQpgYGAKCiMjIEZ1dHVyZSBwYWNrYWdlCgpgYGB7ciBsb2FkfQojIHZpZ25ldHRlKCJmdXR1cmUtMS1vdmVydmlldyIpCmxpYnJhcnkoZnV0dXJlKQpgYGAKCiMjIFNTSCBsb2dpbgpUaGlzIGFwcHJvYWNoIHdvcmtzIGZvciBhIHNlcnZlciB0aGF0IGlzIFNTSC1hY2Nlc3NpYmxlIGFuZCBoYXMgUiBhbmQgdGhlIF9fZnV0dXJlX18gcGFja2FnZSBpbnN0YWxsZWQuIFRvIGJlIGFibGUgdG8gU1NIIGluIHdpdGhvdXQgc3RvcmluZyB5b3VyIHBhc3N3b3JkIGluIHBsYWludGV4dCBzb21ld2hlcmUsIHlvdSdsbCBuZWVkIHRvIHNldCB1cCBwdWJsaWMga2V5IGF1dGhlbnRpZmljYXRpb24uIFlvdSBkbyB0aGlzIGJ5IGNvcHlpbmcgeW91ciBwdWJsaWMga2V5IHRvIGB+Ly5zc2gvYXV0aG9yaXplZF9rZXlzYCBvbiB0aGUgc2VydmVyLiBJZiB5b3UndmUgYWxyZWFkeSBnZW5lcmF0ZWQgYSBwdWJsaWMga2V5IG9uIHlvdXIgbG9jYWwgbWFjaGluZSwgaXQgc2hvdWxkIGJlIGluIGB+Ly5zc2gvaWRfcnNhLnB1YmAgb3Igc29tZXRoaW5nIHNpbWlsYXIuIElmIHlvdSBoYXZlbid0IHlldCwgR29vZ2xlIGhvdyA6LSkKWW91J2xsIGhhdmUgdG8gZG8gdGhpcyBmb3IgZXZlcnkgc2VydmVyIHlvdSB3YW50IHRvIHVzZS4KCllvdSBjYW4gYXV0b21hdGljYWxseSBkbyB0aGlzIHVzaW5nIChbc291cmNlXShodHRwczovL2Fza3VidW50dS5jb20vcXVlc3Rpb25zLzQ4MzAvZWFzaWVzdC13YXktdG8tY29weS1zc2gta2V5cy10by1hbm90aGVyLW1hY2hpbmUpOgoKYGBgYmFzaApzc2gtY29weS1pZCB1c2VyQGd3ZHUxMDIuZ3dkZy5kZQpgYGAKCgojIyBHV0RHIGNsdXN0ZXIKVG8gcnVuIGpvYnMgb24gYSBjbHVzdGVyLCB5b3UgbmVlZCB0byB1c2UgYSBqb2Igc2NoZWR1bGVyLiBGb3IgdGhpcywgeW91IG5lZWQgYSBzZWNvbmQgcGFja2FnZSBgZnV0dXJlLmJhdGNodG9vbHNgLiBGdXJ0aGVyLCB5b3UgbmVlZCB0byBjb3B5IGEgdGVtcGxhdGUgZmlsZSBmb3Igam9iIHNjcmlwdHMgdG8gdGhlIHNlcnZlciBhbmQgbWF5YmUgY29uZmlndXJlIHlvdXIgYC5wcm9maWxlYCBmaWxlLgoKYGBge3J9CmxpYnJhcnkoImZ1dHVyZSIpCmxpYnJhcnkoImxpc3RlbnYiKQpsaWJyYXJ5KCJmdXR1cmUuYmF0Y2h0b29scyIpCmxpYnJhcnkoZGVidWdtZSkKU3lzLnNldGVudihERUJVR01FPSdiYXRjaHRvb2xzJykKbGlicmFyeShiYXRjaHRvb2xzKQoKIyMgU2V0IHVwIGFjY2VzcyB0byByZW1vdGUgbG9naW4gbm9kZQojIGxvZ2luX3ZwbiA8LSB0d2VhayhyZW1vdGUsIHdvcmtlcnMgPSAicmFyc2xhbkBsb2dpbi5nd2RnLmRlIikgIyBkb2Vzbid0IHdvcmsgYmVjYXVzZSBSIG5vdCBpbnN0YWxsZWQKbG9naW4gPC0gdHdlYWsocmVtb3RlLCB3b3JrZXJzID0gImd3ZHUxMDIuZ3dkZy5kZSIsIHVzZXIgPSAncmFyc2xhbicpCmJzdWIgPC0gdHdlYWsoYmF0Y2h0b29sc19sc2YsIHRlbXBsYXRlID0gJ2xzZi50bXBsJywgCiAgICAgICAgICAgICMgd29ya2VycyA9ICJleHBvcnQgTFNGX0VOVkRJUj0vb3B0L2xzZi9jb25mIiwKICAgICAgICAgICAgICAgIHJlc291cmNlcyA9IGxpc3Qoam9iLm5hbWUgPSAndGVzdDEnLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGxvZy5maWxlID0gJ2JsYWFhMi5sb2cnLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHF1ZXVlID0gJ21waScsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgd2FsbHRpbWUgPSAnMTowMCcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJvY2Vzc2VzID0gNCkpCgojIyBTcGVjaWZ5IGZ1dHVyZSB0b3BvbG9neQojIyBsb2dpbiBub2RlIC0+IHsgY2x1c3RlciBub2RlcyB9IC0+IHsgbXVsdGlwbGUgY29yZXMgfQpwbGFuKGxpc3QoCiAgbG9naW4sCiAgYnN1YiwKICBtdWx0aWNvcmUKKSkKIyBkZW1vKCJtYW5kZWxicm90IiwgcGFja2FnZSA9ICJmdXR1cmUiLCBhc2sgPSBGQUxTRSkKCnggJTwtJSB7CiAgdGhvc3QgPC0gU3lzLmluZm8oKVtbIm5vZGVuYW1lIl1dCiAgdHBpZCA8LSBTeXMuZ2V0cGlkKCkKICAjIHNldF9nd2RnX2VudigpCiAgeSA8LSBsaXN0ZW52KCkKICBmb3IgKHRhc2sgaW4gMTo0KSB7CiAgICAjIyAoYikgVGhpcyB3aWxsIGJlIGV2YWx1YXRlZCBvbiBhIGNvbXB1dGUgbm9kZSBvbiB0aGUgY2x1c3RlcgogICAgeVtbdGFza11dICU8LSUgewogICAgICBtaG9zdCA8LSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0KICAgICAgbXBpZCA8LSBTeXMuZ2V0cGlkKCkKICAgICAgeiA8LSBsaXN0ZW52KCkKICAgICAgZm9yIChqaiBpbiAxOjIpIHsKICAgICAgICAjIyAoYykgVGhlc2Ugd2lsbCBiZSBldmFsdWF0ZWQgaW4gc2VwYXJhdGUgcHJvY2Vzc2VzIG9uIHRoZSBzYW1lIGNvbXB1dGUgbm9kZQogICAgICAgIHpbW2pqXV0gJTwtJSBkYXRhLmZyYW1lKHRhc2sgPSB0YXNrLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRvcC5ob3N0ID0gdGhvc3QsIHRvcC5waWQgPSB0cGlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1pZC5ob3N0ID0gbWhvc3QsIG1pZC5waWQgPSBtcGlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhvc3QgPSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGlkID0gU3lzLmdldHBpZCgpKQogICAgICB9CiAgICAgIFJlZHVjZShyYmluZCwgeikKICAgIH0KICB9CiAgUmVkdWNlKHJiaW5kLCB5KQp9CgpwcmludCh4KQoKYGBgCgojIyBicm1zCmJybXMgaXMgYSBCYXllc2lhbiByZWdyZXNzaW9uIG1vZGVsbGluZyBzb2Z0d2FyZS4gQmVjYXVzZSB3ZSBvZnRlbiBydW4gbXVsdGlwbGUgY2hhaW5zIGluIGJybXMgdG8gYXNzZXNzIGNvbnZlcmdlbmNlIGFuZCBvYnRhaW4gc2FtcGxlcywgbW9yZSBxdWlja2x5LCBwYXJhbGxlbGlzYXRpb24gaXMgYmVuZWZpY2lhbC4gYnJtcyBoYXMgaW50ZXJuYWwgc3VwcG9ydCBmb3IgZnV0dXJlcy4gQnkgc2V0dGluZyBpdHMgYGZ1dHVyZWAgYXJndW1lbnQgdG8gdHJ1ZSwgaXQgd2lsbCBydW4gdGhlIGNoYWlucyBhY2NvcmRpbmcgdG8gYHBsYW5gLgpCZWNhdXNlIHJ1bm5pbmcgc3VjaCBhIG1vZGVsIGNhbiB0YWtlIGEgbG90IG9mIHRpbWUsIGl0IGlzIGJlbmVmaWNpYWwgdG8gb2ZmbG9hZCBpdCB0byBhIHJlbW90ZSBzZXJ2ZXIgb3IgY2x1c3Rlci4KCiMjIyB1c2UgYnJtcyB3aXRoIG15IG93biBkYXRhIG9uIExTRgpBbHNvIHNob3dpbmcgYSBkaWZmZXJlbnQgd2F5IHRvIHNldCB1cCB0aGUgZnV0dXJlIGFuZCBwYXNzIGFsb25nIGdsb2JhbHMgYW5kIHBhY2thZ2VzLgoKYGBge3J9CmxvZ2luIDwtIHR3ZWFrKHJlbW90ZSwgd29ya2VycyA9ICJnd2R1MTAyLmd3ZGcuZGUiLCB1c2VyID0gJ3JhcnNsYW4nKQpic3ViIDwtIHR3ZWFrKGJhdGNodG9vbHNfbHNmLCB0ZW1wbGF0ZSA9ICdsc2YudG1wbCcsIAogICAgICAgICAgICAjIHdvcmtlcnMgPSAiZXhwb3J0IExTRl9FTlZESVI9L29wdC9sc2YvY29uZiIsCiAgICAgICAgICAgICAgICByZXNvdXJjZXMgPSBsaXN0KGpvYi5uYW1lID0gJ2JybXNfdGVzdCcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbG9nLmZpbGUgPSAnYnJtc190ZXN0LmxvZycsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcXVldWUgPSAnbXBpJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB3YWxsdGltZSA9ICcyOjAwJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwcm9jZXNzZXMgPSA0KSkKbGlicmFyeShicm1zKQoKIyMgU3BlY2lmeSBmdXR1cmUgdG9wb2xvZ3kKIyMgbG9naW4gbm9kZSAtPiB7IGNsdXN0ZXIgbm9kZSAoY29tcGlsZSBicm1zIG1vZGVsKSB9IC0+IHsgcnVuIGNoYWlucyBvbiBtdWx0aXBsZSBjb3JlcyB9CnBsYW4obGlzdCgKICBsb2dpbiwKICBic3ViLAogIG11bHRpY29yZQopKQoKCm15ZGF0YSA9IGRhdGEuZnJhbWUoeCA9IHJub3JtKDEwMCksIHkgPSBybm9ybSgxMDApKQoKbW9kZWxfbmFtZSA8LSAibXlkYXRhX21vZGVsLnJkcyIKZml0MiAlPC0lIHsgIyByZXRyaWV2ZSB0aGUgbW9kZWwgaWYgaXQgaGFzIGJlZW4gZml0IGFscmVhZHkKICBpZiAoZmlsZS5leGlzdHMobW9kZWxfbmFtZSkpCiAgICByZWFkUkRTKG1vZGVsX25hbWUpCn0KaWYgKGlzLm51bGwoZml0MikpIHsKICBmaXQyICU8LSUgeyAjIGxvZ2luIHRvIHRhcmRpcwogICAgbW9kZWwgJTwtJSB7ICMgcXN1YgogICAgICBtZXNzYWdlKG1vZGVsX25hbWUpCiAgICAgIGJybSh4IH4geSwgCiAgICAgICAgZGF0YSA9IG15ZGF0YSwgCiAgICAgICAgY2hhaW5zID0gNCwKICAgICAgICBmdXR1cmUgPSBUUlVFICNtdWx0aWNvcmUKICAgICAgICApCiAgICB9CiAgICBzYXZlUkRTKG1vZGVsLCBmaWxlID0gbW9kZWxfbmFtZSkgIyBpbiBjYXNlIHdlIGxvc2UgdGhlIGNvbm5lY3Rpb24sIHNhdmUgdGhlIHJlc3VsdAogICAgbW9kZWwKICB9Cn0KCiMgYnV0IHRoZSBwcm9ncmFtIHdpbGwgd2FpdCBmb3IgaXQKZml0MgoKIyBkb24ndCBtYWtlIHlvdXIgcGxvdHMgb24gdGhlIGNsdXN0ZXIsIG1ha2UgZW0gYXQgaG9tZQptYXJnaW5hbF9lZmZlY3RzKGZpdDIpCmBgYAoKIyMgbG9jYWwgZW52CmBgYHtyfQpzZXNzaW9uSW5mbygpCmBgYAoKIyMgcmVtb3RlIGVudgpgYGB7cn0KcGxhbihsb2dpbikKCnZhbHVlKGZ1dHVyZSh7c2Vzc2lvbkluZm8oKSB9KSkKYGBgCgojIyMgLnByb2ZpbGUKYGBge3J9CmNhdCh2YWx1ZShmdXR1cmUoeyByZWFkcjo6cmVhZF9maWxlKCIucHJvZmlsZSIpIH0pKSkKYGBgCgojIyMgbHNmLnRtcGwKYGBge3J9CmNhdCh2YWx1ZShmdXR1cmUoeyByZWFkcjo6cmVhZF9maWxlKCJsc2YudG1wbCIpIH0pKSkKYGBgCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiR1dERyIKYXV0aG9yOiAiUnViZW4gQXJzbGFuIgpkYXRlOiAiMzAgT2N0b2JlciAyMDE3IgpvdXRwdXQ6IGh0bWxfZG9jdW1lbnQKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQpgYGAKCiMjIEZ1dHVyZSBwYWNrYWdlCgpgYGB7ciBsb2FkfQojIHZpZ25ldHRlKCJmdXR1cmUtMS1vdmVydmlldyIpCmxpYnJhcnkoZnV0dXJlKQpgYGAKCiMjIFNTSCBsb2dpbgpUaGlzIGFwcHJvYWNoIHdvcmtzIGZvciBhIHNlcnZlciB0aGF0IGlzIFNTSC1hY2Nlc3NpYmxlIGFuZCBoYXMgUiBhbmQgdGhlIF9fZnV0dXJlX18gcGFja2FnZSBpbnN0YWxsZWQuIFRvIGJlIGFibGUgdG8gU1NIIGluIHdpdGhvdXQgc3RvcmluZyB5b3VyIHBhc3N3b3JkIGluIHBsYWludGV4dCBzb21ld2hlcmUsIHlvdSdsbCBuZWVkIHRvIHNldCB1cCBwdWJsaWMga2V5IGF1dGhlbnRpZmljYXRpb24uIFlvdSBkbyB0aGlzIGJ5IGNvcHlpbmcgeW91ciBwdWJsaWMga2V5IHRvIGB+Ly5zc2gvYXV0aG9yaXplZF9rZXlzYCBvbiB0aGUgc2VydmVyLiBJZiB5b3UndmUgYWxyZWFkeSBnZW5lcmF0ZWQgYSBwdWJsaWMga2V5IG9uIHlvdXIgbG9jYWwgbWFjaGluZSwgaXQgc2hvdWxkIGJlIGluIGB+Ly5zc2gvaWRfcnNhLnB1YmAgb3Igc29tZXRoaW5nIHNpbWlsYXIuIElmIHlvdSBoYXZlbid0IHlldCwgR29vZ2xlIGhvdyA6LSkKWW91J2xsIGhhdmUgdG8gZG8gdGhpcyBmb3IgZXZlcnkgc2VydmVyIHlvdSB3YW50IHRvIHVzZS4KCllvdSBjYW4gYXV0b21hdGljYWxseSBkbyB0aGlzIHVzaW5nIChbc291cmNlXShodHRwczovL2Fza3VidW50dS5jb20vcXVlc3Rpb25zLzQ4MzAvZWFzaWVzdC13YXktdG8tY29weS1zc2gta2V5cy10by1hbm90aGVyLW1hY2hpbmUpOgoKYGBgYmFzaApzc2gtY29weS1pZCB1c2VyQGd3ZHUxMDIuZ3dkZy5kZQpgYGAKCgojIyBHV0RHIGNsdXN0ZXIKVG8gcnVuIGpvYnMgb24gYSBjbHVzdGVyLCB5b3UgbmVlZCB0byB1c2UgYSBqb2Igc2NoZWR1bGVyLiBGb3IgdGhpcywgeW91IG5lZWQgYSBzZWNvbmQgcGFja2FnZSBgZnV0dXJlLmJhdGNodG9vbHNgLiBGdXJ0aGVyLCB5b3UgbmVlZCB0byBjb3B5IGEgdGVtcGxhdGUgZmlsZSBmb3Igam9iIHNjcmlwdHMgdG8gdGhlIHNlcnZlciBhbmQgbWF5YmUgY29uZmlndXJlIHlvdXIgYC5wcm9maWxlYCBmaWxlLgoKYGBge3J9CmxpYnJhcnkoImZ1dHVyZSIpCmxpYnJhcnkoImxpc3RlbnYiKQpsaWJyYXJ5KCJmdXR1cmUuYmF0Y2h0b29scyIpCmxpYnJhcnkoZGVidWdtZSkKU3lzLnNldGVudihERUJVR01FPSdiYXRjaHRvb2xzJykKbGlicmFyeShiYXRjaHRvb2xzKQoKIyMgU2V0IHVwIGFjY2VzcyB0byByZW1vdGUgbG9naW4gbm9kZQojIGxvZ2luX3ZwbiA8LSB0d2VhayhyZW1vdGUsIHdvcmtlcnMgPSAicmFyc2xhbkBsb2dpbi5nd2RnLmRlIikgIyBkb2Vzbid0IHdvcmsgYmVjYXVzZSBSIG5vdCBpbnN0YWxsZWQKbG9naW4gPC0gdHdlYWsocmVtb3RlLCB3b3JrZXJzID0gImd3ZHUxMDIuZ3dkZy5kZSIsIHVzZXIgPSAncmFyc2xhbicpCmJzdWIgPC0gdHdlYWsoYmF0Y2h0b29sc19sc2YsIHRlbXBsYXRlID0gJ2xzZi50bXBsJywgCiAgICAgICAgICAgICMgd29ya2VycyA9ICJleHBvcnQgTFNGX0VOVkRJUj0vb3B0L2xzZi9jb25mIiwKICAgICAgICAgICAgICAgIHJlc291cmNlcyA9IGxpc3Qoam9iLm5hbWUgPSAndGVzdDEnLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGxvZy5maWxlID0gJ2JsYWFhMi5sb2cnLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHF1ZXVlID0gJ21waScsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgd2FsbHRpbWUgPSAnMTowMCcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJvY2Vzc2VzID0gNCkpCgojIyBTcGVjaWZ5IGZ1dHVyZSB0b3BvbG9neQojIyBsb2dpbiBub2RlIC0+IHsgY2x1c3RlciBub2RlcyB9IC0+IHsgbXVsdGlwbGUgY29yZXMgfQpwbGFuKGxpc3QoCiAgbG9naW4sCiAgYnN1YiwKICBtdWx0aWNvcmUKKSkKIyBkZW1vKCJtYW5kZWxicm90IiwgcGFja2FnZSA9ICJmdXR1cmUiLCBhc2sgPSBGQUxTRSkKCnggJTwtJSB7CiAgdGhvc3QgPC0gU3lzLmluZm8oKVtbIm5vZGVuYW1lIl1dCiAgdHBpZCA8LSBTeXMuZ2V0cGlkKCkKICAjIHNldF9nd2RnX2VudigpCiAgeSA8LSBsaXN0ZW52KCkKICBmb3IgKHRhc2sgaW4gMTo0KSB7CiAgICAjIyAoYikgVGhpcyB3aWxsIGJlIGV2YWx1YXRlZCBvbiBhIGNvbXB1dGUgbm9kZSBvbiB0aGUgY2x1c3RlcgogICAgeVtbdGFza11dICU8LSUgewogICAgICBtaG9zdCA8LSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0KICAgICAgbXBpZCA8LSBTeXMuZ2V0cGlkKCkKICAgICAgeiA8LSBsaXN0ZW52KCkKICAgICAgZm9yIChqaiBpbiAxOjIpIHsKICAgICAgICAjIyAoYykgVGhlc2Ugd2lsbCBiZSBldmFsdWF0ZWQgaW4gc2VwYXJhdGUgcHJvY2Vzc2VzIG9uIHRoZSBzYW1lIGNvbXB1dGUgbm9kZQogICAgICAgIHpbW2pqXV0gJTwtJSBkYXRhLmZyYW1lKHRhc2sgPSB0YXNrLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRvcC5ob3N0ID0gdGhvc3QsIHRvcC5waWQgPSB0cGlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1pZC5ob3N0ID0gbWhvc3QsIG1pZC5waWQgPSBtcGlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhvc3QgPSBTeXMuaW5mbygpW1sibm9kZW5hbWUiXV0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGlkID0gU3lzLmdldHBpZCgpKQogICAgICB9CiAgICAgIFJlZHVjZShyYmluZCwgeikKICAgIH0KICB9CiAgUmVkdWNlKHJiaW5kLCB5KQp9CgpwcmludCh4KQoKYGBgCgojIyBicm1zCmJybXMgaXMgYSBCYXllc2lhbiByZWdyZXNzaW9uIG1vZGVsbGluZyBzb2Z0d2FyZS4gQmVjYXVzZSB3ZSBvZnRlbiBydW4gbXVsdGlwbGUgY2hhaW5zIGluIGJybXMgdG8gYXNzZXNzIGNvbnZlcmdlbmNlIGFuZCBvYnRhaW4gc2FtcGxlcywgbW9yZSBxdWlja2x5LCBwYXJhbGxlbGlzYXRpb24gaXMgYmVuZWZpY2lhbC4gYnJtcyBoYXMgaW50ZXJuYWwgc3VwcG9ydCBmb3IgZnV0dXJlcy4gQnkgc2V0dGluZyBpdHMgYGZ1dHVyZWAgYXJndW1lbnQgdG8gdHJ1ZSwgaXQgd2lsbCBydW4gdGhlIGNoYWlucyBhY2NvcmRpbmcgdG8gYHBsYW5gLgpCZWNhdXNlIHJ1bm5pbmcgc3VjaCBhIG1vZGVsIGNhbiB0YWtlIGEgbG90IG9mIHRpbWUsIGl0IGlzIGJlbmVmaWNpYWwgdG8gb2ZmbG9hZCBpdCB0byBhIHJlbW90ZSBzZXJ2ZXIgb3IgY2x1c3Rlci4KCiMjIyB1c2UgYnJtcyB3aXRoIG15IG93biBkYXRhIG9uIExTRgpBbHNvIHNob3dpbmcgYSBkaWZmZXJlbnQgd2F5IHRvIHNldCB1cCB0aGUgZnV0dXJlIGFuZCBwYXNzIGFsb25nIGdsb2JhbHMgYW5kIHBhY2thZ2VzLgoKYGBge3J9CmxvZ2luIDwtIHR3ZWFrKHJlbW90ZSwgd29ya2VycyA9ICJnd2R1MTAyLmd3ZGcuZGUiLCB1c2VyID0gJ3JhcnNsYW4nKQpic3ViIDwtIHR3ZWFrKGJhdGNodG9vbHNfbHNmLCB0ZW1wbGF0ZSA9ICdsc2YudG1wbCcsIAogICAgICAgICAgICAjIHdvcmtlcnMgPSAiZXhwb3J0IExTRl9FTlZESVI9L29wdC9sc2YvY29uZiIsCiAgICAgICAgICAgICAgICByZXNvdXJjZXMgPSBsaXN0KGpvYi5uYW1lID0gJ2JybXNfdGVzdCcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbG9nLmZpbGUgPSAnYnJtc190ZXN0LmxvZycsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcXVldWUgPSAnbXBpJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB3YWxsdGltZSA9ICcyOjAwJywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwcm9jZXNzZXMgPSA0KSkKbGlicmFyeShicm1zKQoKIyMgU3BlY2lmeSBmdXR1cmUgdG9wb2xvZ3kKIyMgbG9naW4gbm9kZSAtPiB7IGNsdXN0ZXIgbm9kZSAoY29tcGlsZSBicm1zIG1vZGVsKSB9IC0+IHsgcnVuIGNoYWlucyBvbiBtdWx0aXBsZSBjb3JlcyB9CnBsYW4obGlzdCgKICBsb2dpbiwKICBic3ViLAogIG11bHRpY29yZQopKQoKCm15ZGF0YSA9IGRhdGEuZnJhbWUoeCA9IHJub3JtKDEwMCksIHkgPSBybm9ybSgxMDApKQoKbW9kZWxfbmFtZSA8LSAibXlkYXRhX21vZGVsLnJkcyIKZml0MiAlPC0lIHsgIyByZXRyaWV2ZSB0aGUgbW9kZWwgaWYgaXQgaGFzIGJlZW4gZml0IGFscmVhZHkKICBpZiAoZmlsZS5leGlzdHMobW9kZWxfbmFtZSkpCiAgICByZWFkUkRTKG1vZGVsX25hbWUpCn0KaWYgKGlzLm51bGwoZml0MikpIHsKICBmaXQyICU8LSUgeyAjIGxvZ2luIHRvIHRhcmRpcwogICAgbW9kZWwgJTwtJSB7ICMgcXN1YgogICAgICBtZXNzYWdlKG1vZGVsX25hbWUpCiAgICAgIGJybSh4IH4geSwgCiAgICAgICAgZGF0YSA9IG15ZGF0YSwgCiAgICAgICAgY2hhaW5zID0gNCwKICAgICAgICBmdXR1cmUgPSBUUlVFICNtdWx0aWNvcmUKICAgICAgICApCiAgICB9CiAgICBzYXZlUkRTKG1vZGVsLCBmaWxlID0gbW9kZWxfbmFtZSkgIyBpbiBjYXNlIHdlIGxvc2UgdGhlIGNvbm5lY3Rpb24sIHNhdmUgdGhlIHJlc3VsdAogICAgbW9kZWwKICB9Cn0KCiMgYnV0IHRoZSBwcm9ncmFtIHdpbGwgd2FpdCBmb3IgaXQKZml0MgoKIyBkb24ndCBtYWtlIHlvdXIgcGxvdHMgb24gdGhlIGNsdXN0ZXIsIG1ha2UgZW0gYXQgaG9tZQptYXJnaW5hbF9lZmZlY3RzKGZpdDIpCmBgYAoKIyMgbG9jYWwgZW52CmBgYHtyfQpzZXNzaW9uSW5mbygpCmBgYAoKIyMgcmVtb3RlIGVudgpgYGB7cn0KcGxhbihsb2dpbikKCnZhbHVlKGZ1dHVyZSh7c2Vzc2lvbkluZm8oKSB9KSkKYGBgCgojIyMgLnByb2ZpbGUKYGBge3IgY29tbWVudD0iIn0KY2F0KHZhbHVlKGZ1dHVyZSh7IHJlYWRyOjpyZWFkX2ZpbGUoIi5wcm9maWxlIikgfSkpKQpgYGAKCiMjIyAuYmFzaHJjCmBgYHtyIGNvbW1lbnQ9IiJ9CmNhdCh2YWx1ZShmdXR1cmUoeyByZWFkcjo6cmVhZF9maWxlKCIuYmFzaHJjIikgfSkpKQpgYGAKCgojIyMgbHNmLnRtcGwKYGBge3IgY29tbWVudD0iIn0KY2F0KHZhbHVlKGZ1dHVyZSh7IHJlYWRyOjpyZWFkX2ZpbGUoImxzZi50bXBsIikgfSkpKQpgYGAKCg==</div>
 
 
 

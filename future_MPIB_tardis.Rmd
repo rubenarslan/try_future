@@ -209,7 +209,7 @@ marginal_effects(fit2)
 
 
 You can track progress for your job here:
-https://tardis.mpib-berlin.mpg.de/jobs/
+https://tardis.mpib-berlin.mpg.de/jobs
 
 (find your name, click the job)
 
@@ -221,19 +221,19 @@ sessionInfo()
 ```
 
 ## remote env
-```{r}
+```{r comment=""}
 plan(login)
 
 value(future({sessionInfo() }))
 ```
 
 ### .profile
-```{r}
-value(future({ readr::read_file(".profile") }))
+```{r comment=""}
+cat(value(future({ readr::read_file(".profile") })))
 ```
 
-### lsf.tmpl
-```{r}
-value(future({ readr::read_file("lsf.tmpl") }))
+### torque-lido.tmpl
+```{r comment=""}
+cat(value(future({ readr::read_file("torque-lido.tmpl") })))
 ```
 

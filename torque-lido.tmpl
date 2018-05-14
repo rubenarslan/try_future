@@ -5,6 +5,7 @@ resources$walltime = assertString(resources$walltime)
 resources$queue = assertString(resources$queue)
 resources$memory = asInt(resources$memory, lower = 1L, upper = 64L)
 resources$ncpus = if (is.null(resources$ncpus)) 1L else asInt(resources$ncpus, lower = 1L)
+job.name = assertString(resources$job.name)
 
 ## first string of queue, selected by walltime
 queue = resources$queue

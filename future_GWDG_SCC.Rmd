@@ -156,12 +156,18 @@ value(future({sessionInfo() }))
 ```
 
 ### .profile
-```{r}
+```{r comment=""}
 cat(value(future({ readr::read_file(".profile") })))
 ```
 
+### .bashrc
+```{r comment=""}
+cat(value(future({ readr::read_file(".bashrc") })))
+```
+
+
 ### lsf.tmpl
-```{r}
+```{r comment=""}
 cat(value(future({ readr::read_file("lsf.tmpl") })))
 ```
 
