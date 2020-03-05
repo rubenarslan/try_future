@@ -3,29 +3,31 @@
 ## Check some resources and set sane defaults
 resources$walltime = assertString(resources$walltime)
 resources$queue = assertString(resources$queue)
-resources$memory = asInt(resources$memory, lower = 1L, upper = 64L)
+resources$memory = asInt(resources$memory, lower = 1L, upper = 1000L)
 resources$ncpus = if (is.null(resources$ncpus)) 1L else asInt(resources$ncpus, lower = 1L)
+resources$nodes = if (is.null(resources$nodes)) 1L else asInt(resources$nodes, lower = 1L)
 job.name = assertString(resources$job.name)
 
 ## first string of queue, selected by walltime
 queue = resources$queue
 
-log.file = resources$log.file
+log.file = job.name
 -%>
 
 #PBS -N <%= job.name %>
-#PBS -l walltime=<%= resources$walltime %>,nodes=1:ppn=<%= resources$ncpus %><%= if (!is.null(resources$type)) paste0(":", resources$type) %>
+#PBS -l walltime=<%= resources$walltime %>,nodes=<%= resources$nodes %>:ppn=<%= resources$ncpus %>
 #PBS -l mem=<%= resources$memory %>gb
 #PBS -q <%= queue %>
-#PBS -o $HOME/logs/
+#PBS -o $HOME/logs/<% log.file %>
 #PBS -j oe
-#PBS -m n
+#PBS -m e
 #PBS -d .
-
 
 ## export value of DEBUGME environemnt var to slave
 export DEBUGME=<%= Sys.getenv("DEBUGME") %>
 
+## load R 3.6
+module load R/3.6
+
 ## run R
 Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
-

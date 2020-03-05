@@ -21,7 +21,9 @@ library(future)
 
 ## Use R directly on the server (no scheduler)
 
-This approach works for a server that is SSH-accessible and has R and the __future__ package installed. To be able to SSH in without storing your password in plaintext somewhere, you'll need to set up public key authentification. You do this by copying your public key to `~/.ssh/authorized_keys` on the server. If you've already generated a public key on your local machine, it should be in `~/.ssh/id_rsa.pub` or something similar. If you haven't yet, Google how :-)
+### Initial setup (don't repeat)
+
+This approach works for a server that is SSH-accessible and has R and the __future__ package installed. To be able to SSH in without storing your password in plaintext somewhere, you'll need to set up public key authentification. You do this by copying your public key to `~/.ssh/authorized_keys` on the server. If you've already generated a public key on your local machine, it should be in `~/.ssh/id_rsa.pub` or something similar. If you haven't yet, Google how (the easiest way I know is through RStudio's menu Tools->Global Options->Git->Generate Public Key, you don't want a passphrase for this application :-)
 You'll have to do this for every server you want to use.
 
 You can automatically do this using ([source](https://askubuntu.com/questions/4830/easiest-way-to-copy-ssh-keys-to-another-machine):
@@ -30,6 +32,27 @@ You can automatically do this using ([source](https://askubuntu.com/questions/48
 ssh-copy-id user@tardis.mpib-berlin.mpg.de
 ```
 
+#### Set up server
+Before you can use future on the server, first SSH into Tardis (using the Terminal tab right of the console tab in RStudio) and install future there too. You'll probably want to load a later R version than the default 3.3.3
+
+```bash
+ssh user@tardis.mpib-berlin.mpg.de
+echo "module load 3.6" >> .profile
+R
+```
+
+Now that you've entered R, confirm that version 3.6.* is loaded, then run
+
+```r
+install.packages(c("future", "listenv", "future.batchtools"))
+q("no")
+```
+
+Then leave the server, the rest you can do from R.
+
+```bash
+exit
+```
 
 
 ```{r}
@@ -46,11 +69,15 @@ plan(login) # this tells the future package that we want to use a remote server 
 ## login node -> { cluster nodes } -> { multiple cores }
 plan(list(
   login,
-  multicore,
+  multiprocess,
   sequential
 ))
 # demo("mandelbrot", package = "future", ask = FALSE)
 
+x %<-% {
+  y %<-% { 1 }
+  y
+}
 
 ## (a) This will be evaluated on the cluster login computer
 x %<-% { # this operator binds the result of the promise/future to x
