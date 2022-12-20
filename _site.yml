@@ -5,6 +5,8 @@ navbar:
   left:
   - text: Overview
     href: index.html
+  - text: Leipzig R Server
+    href: future_Leipzig_Rstudio03.html
   - text: ARC R Server
     href: future_ARC_Rserver.html
   - text: MPIB Tardis
