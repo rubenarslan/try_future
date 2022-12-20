@@ -1,0 +1,101 @@
+---
+title: "future on Leipzig R server"
+author: "Ruben Arslan"
+date: "30 October 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Future package
+
+```{r load}
+# vignette("future-1-overview")
+library(future)
+```
+
+## Simple, local
+
+A simple local example. Multiprocess starts whatever multiprocess tool is available on the platform (e.g. Multicore on Unix-based system, PSOCK cluster on Windows). By using `%<-%` instead of `<-` we use `future`.
+
+```{r}
+plan(multisession)
+v %<-% {
+ cat("Resolving...\n")
+ 3.14
+}
+v
+```
+
+## Remote Leipzig R server (no scheduler)
+
+### SSH ID
+This approach works for a server that is SSH-accessible and has R installed. To be able to SSH in without storing your password in plaintext somewhere, you'll need to set up public key authentification. You do this by copying your public key to `~/.ssh/authorized_keys` on the server. If you've already generated a public key on your local machine, it should be in `~/.ssh/id_rsa.pub` or something similar. 
+
+#### Steps
+Enter the following in the Terminal/command line of your local computer. If you already have an SSH key, skip this:
+
+```shell
+ssh-keygen
+```
+
+Now, run
+```shell
+ssh-copy-id YOURUSERNAME@rstudio03.sc.uni-leipzig.de
+```
+
+Enter your password. Try if it worked:
+
+```shell
+ssh YOURUSERNAME@rstudio03.sc.uni-leipzig.de
+```
+
+If you're not prompted for your password, you're good to go!
+
+
+### Send a brms model to the server
+For this to work, you need the future and the brms package to be installed on the server and locally.
+
+```{r}
+library(future) # this is the package we use to flexibly scale our processing
+library(brms)
+
+## Set up access to remote login node
+plan(cluster, workers = rep("xb629fypu@rstudio03.sc.uni-leipzig.de", 3)) # this tells the future package that we want to use a remote server for running our future operations and would run at most 3 models in parallel
+v %<-% {
+ cat("Resolving...\n")
+ 3.14
+}
+v
+
+prior1 <- prior(normal(0,10), class = b) +
+  prior(cauchy(0,2), class = sd)
+
+fit1 %<-% brm(count ~ zAge + zBase + Trt + (1|patient),
+            data = epilepsy, # you don't need to upload the data to the server first 
+            family = poisson(), 
+            file = "fit1", # smart to save the result as a file name so you can later quickly retrieve an already fitted model. you have to change this name for every new model
+            file_refit = "on_change", # don't use the cached version if model or data changed,
+            cores = 4, # always make use of between-chain parallelisation on the server
+            prior = prior1)
+
+fit2 %<-% brm(count ~ zAge + zBase * Trt + (1|patient),
+            data = epilepsy, # you don't need to upload the data to the server first 
+            family = poisson(), 
+            file = "fit2", # smart to save the result as a file name so you can later quickly retrieve an already fitted model. you have to change this name for every new model
+            file_refit = "on_change", # don't use the cached version if model or data changed,
+            cores = 4, # always make use of between-chain parallelisation on the server
+            prior = prior1) %seed% TRUE
+```
+
+As you'll see when you run this code, it immediately returns. Only when we "use" the variables later on, do we have to wait for the result from the server.
+
+```{r}
+fit1
+fit2
+```
+
+
+

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ruben Arslan" />
+
+<meta name="date" content="2017-10-30" />
+
+<title>future on Leipzig R server</title>
+
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  { color: #cccccc; background-color: #303030; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ffcfaf; } /* Alert */
+code span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bn { color: #dca3a3; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #f0dfaf; } /* ControlFlow */
+code span.ch { color: #dca3a3; } /* Char */
+code span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code span.co { color: #7f9f7f; } /* Comment */
+code span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code span.do { color: #7f9f7f; } /* Documentation */
+code span.dt { color: #dfdfbf; } /* DataType */
+code span.dv { color: #dcdccc; } /* DecVal */
+code span.er { color: #c3bf9f; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #c0bed1; } /* Float */
+code span.fu { color: #efef8f; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+code span.kw { color: #f0dfaf; } /* Keyword */
+code span.op { color: #f0efd0; } /* Operator */
+code span.ot { color: #efef8f; } /* Other */
+code span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code span.sc { color: #dca3a3; } /* SpecialChar */
+code span.ss { color: #cc9393; } /* SpecialString */
+code span.st { color: #cc9393; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #cc9393; } /* VerbatimString */
+code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Trying the future package</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Overview</a>
+</li>
+<li>
+  <a href="future_Leipzig_Rstudio03.html">Leipzig R Server</a>
+</li>
+<li>
+  <a href="future_ARC_Rserver.html">ARC R Server</a>
+</li>
+<li>
+  <a href="future_MPIB_tardis.html">MPIB Tardis</a>
+</li>
+<li>
+  <a href="future_GWDG_SCC.html">GWDG SCC</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rubenarslan/try_future">
+    <span class="fa fa-github"></span>
+     
+    
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">future on Leipzig R server</h1>
+<h4 class="author">Ruben Arslan</h4>
+<h4 class="date">30 October 2017</h4>
+
+</div>
+
+
+<div id="future-package" class="section level2">
+<h2>Future package</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># vignette(&quot;future-1-overview&quot;)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(future)</span></code></pre></div>
+</div>
+<div id="simple-local" class="section level2">
+<h2>Simple, local</h2>
+<p>A simple local example. Multiprocess starts whatever multiprocess
+tool is available on the platform (e.g. Multicore on Unix-based system,
+PSOCK cluster on Windows). By using <code>%&lt;-%</code> instead of
+<code>&lt;-</code> we use <code>future</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plan</span>(multisession)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>v <span class="sc">%&lt;-%</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">cat</span>(<span class="st">&quot;Resolving...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a> <span class="fl">3.14</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>v</span></code></pre></div>
+<pre><code>## Resolving...</code></pre>
+<pre><code>## [1] 3.14</code></pre>
+</div>
+<div id="remote-leipzig-r-server-no-scheduler" class="section level2">
+<h2>Remote Leipzig R server (no scheduler)</h2>
+<div id="ssh-id" class="section level3">
+<h3>SSH ID</h3>
+<p>This approach works for a server that is SSH-accessible and has R
+installed. To be able to SSH in without storing your password in
+plaintext somewhere, you’ll need to set up public key authentification.
+You do this by copying your public key to
+<code>~/.ssh/authorized_keys</code> on the server. If you’ve already
+generated a public key on your local machine, it should be in
+<code>~/.ssh/id_rsa.pub</code> or something similar.</p>
+<div id="steps" class="section level4">
+<h4>Steps</h4>
+<p>Enter the following in the Terminal/command line of your local
+computer. If you already have an SSH key, skip this:</p>
+<pre class="shell"><code>ssh-keygen</code></pre>
+<p>Now, run</p>
+<pre class="shell"><code>ssh-copy-id YOURUSERNAME@rstudio03.sc.uni-leipzig.de</code></pre>
+<p>Enter your password. Try if it worked:</p>
+<pre class="shell"><code>ssh YOURUSERNAME@rstudio03.sc.uni-leipzig.de</code></pre>
+<p>If you’re not prompted for your password, you’re good to go!</p>
+</div>
+</div>
+<div id="send-a-brms-model-to-the-server" class="section level3">
+<h3>Send a brms model to the server</h3>
+<p>For this to work, you need the future and the brms package to be
+installed on the server and locally.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(future) <span class="co"># this is the package we use to flexibly scale our processing</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span></code></pre></div>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## Loading &#39;brms&#39; package (version 2.18.0). Useful instructions
+## can be found by typing help(&#39;brms&#39;). A more detailed introduction
+## to the package is available through vignette(&#39;brms_overview&#39;).</code></pre>
+<pre><code>## 
+## Attaching package: &#39;brms&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     ar</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Set up access to remote login node</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plan</span>(cluster, <span class="at">workers =</span> <span class="fu">rep</span>(<span class="st">&quot;xb629fypu@rstudio03.sc.uni-leipzig.de&quot;</span>, <span class="dv">3</span>)) <span class="co"># this tells the future package that we want to use a remote server for running our future operations and would run at most 3 models in parallel</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>v <span class="sc">%&lt;-%</span> {</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">cat</span>(<span class="st">&quot;Resolving...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a> <span class="fl">3.14</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>v</span></code></pre></div>
+<pre><code>## Resolving...</code></pre>
+<pre><code>## [1] 3.14</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>prior1 <span class="ot">&lt;-</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>,<span class="dv">10</span>), <span class="at">class =</span> b) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">cauchy</span>(<span class="dv">0</span>,<span class="dv">2</span>), <span class="at">class =</span> sd)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>fit1 <span class="sc">%&lt;-%</span> <span class="fu">brm</span>(count <span class="sc">~</span> zAge <span class="sc">+</span> zBase <span class="sc">+</span> Trt <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>patient),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> epilepsy, <span class="co"># you don&#39;t need to upload the data to the server first </span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">poisson</span>(), </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">file =</span> <span class="st">&quot;fit1&quot;</span>, <span class="co"># smart to save the result as a file name so you can later quickly retrieve an already fitted model. you have to change this name for every new model</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">file_refit =</span> <span class="st">&quot;on_change&quot;</span>, <span class="co"># don&#39;t use the cached version if model or data changed,</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores =</span> <span class="dv">4</span>, <span class="co"># always make use of between-chain parallelisation on the server</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior =</span> prior1)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>fit2 <span class="sc">%&lt;-%</span> <span class="fu">brm</span>(count <span class="sc">~</span> zAge <span class="sc">+</span> zBase <span class="sc">*</span> Trt <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>patient),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> epilepsy, <span class="co"># you don&#39;t need to upload the data to the server first </span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">poisson</span>(), </span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">file =</span> <span class="st">&quot;fit2&quot;</span>, <span class="co"># smart to save the result as a file name so you can later quickly retrieve an already fitted model. you have to change this name for every new model</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">file_refit =</span> <span class="st">&quot;on_change&quot;</span>, <span class="co"># don&#39;t use the cached version if model or data changed,</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores =</span> <span class="dv">4</span>, <span class="co"># always make use of between-chain parallelisation on the server</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior =</span> prior1) <span class="sc">%seed%</span> <span class="cn">TRUE</span></span></code></pre></div>
+<p>As you’ll see when you run this code, it immediately returns. Only
+when we “use” the variables later on, do we have to wait for the result
+from the server.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fit1</span></code></pre></div>
+<pre><code>##  Family: poisson 
+##   Links: mu = log 
+## Formula: count ~ zAge + zBase + Trt + (1 | patient) 
+##    Data: epilepsy (Number of observations: 236) 
+##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 4000
+## 
+## Group-Level Effects: 
+## ~patient (Number of levels: 59) 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     0.58      0.07     0.46     0.74 1.01      764     1371
+## 
+## Population-Level Effects: 
+##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept     1.77      0.12     1.54     2.01 1.01      600     1206
+## zAge          0.09      0.09    -0.08     0.26 1.00      675     1449
+## zBase         0.73      0.08     0.57     0.90 1.00      666     1146
+## Trt1         -0.27      0.17    -0.60     0.06 1.01      523     1281
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fit2</span></code></pre></div>
+<pre><code>##  Family: poisson 
+##   Links: mu = log 
+## Formula: count ~ zAge + zBase * Trt + (1 | patient) 
+##    Data: epilepsy (Number of observations: 236) 
+##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 4000
+## 
+## Group-Level Effects: 
+## ~patient (Number of levels: 59) 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     0.58      0.07     0.46     0.74 1.00      848     1595
+## 
+## Population-Level Effects: 
+##            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept      1.76      0.12     1.52     2.00 1.01      628     1556
+## zAge           0.10      0.09    -0.08     0.26 1.00      690     1417
+## zBase          0.70      0.12     0.46     0.95 1.00      575     1162
+## Trt1          -0.26      0.17    -0.61     0.06 1.00      643     1333
+## zBase:Trt1     0.05      0.16    -0.27     0.38 1.00      849     1382
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiZnV0dXJlIG9uIExlaXB6aWcgUiBzZXJ2ZXIiCmF1dGhvcjogIlJ1YmVuIEFyc2xhbiIKZGF0ZTogIjMwIE9jdG9iZXIgMjAxNyIKb3V0cHV0OiBodG1sX2RvY3VtZW50Ci0tLQoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9CmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkKYGBgCgojIyBGdXR1cmUgcGFja2FnZQoKYGBge3IgbG9hZH0KIyB2aWduZXR0ZSgiZnV0dXJlLTEtb3ZlcnZpZXciKQpsaWJyYXJ5KGZ1dHVyZSkKYGBgCgojIyBTaW1wbGUsIGxvY2FsCgpBIHNpbXBsZSBsb2NhbCBleGFtcGxlLiBNdWx0aXByb2Nlc3Mgc3RhcnRzIHdoYXRldmVyIG11bHRpcHJvY2VzcyB0b29sIGlzIGF2YWlsYWJsZSBvbiB0aGUgcGxhdGZvcm0gKGUuZy4gTXVsdGljb3JlIG9uIFVuaXgtYmFzZWQgc3lzdGVtLCBQU09DSyBjbHVzdGVyIG9uIFdpbmRvd3MpLiBCeSB1c2luZyBgJTwtJWAgaW5zdGVhZCBvZiBgPC1gIHdlIHVzZSBgZnV0dXJlYC4KCmBgYHtyfQpwbGFuKG11bHRpc2Vzc2lvbikKdiAlPC0lIHsKIGNhdCgiUmVzb2x2aW5nLi4uXG4iKQogMy4xNAp9CnYKYGBgCgojIyBSZW1vdGUgTGVpcHppZyBSIHNlcnZlciAobm8gc2NoZWR1bGVyKQoKIyMjIFNTSCBJRApUaGlzIGFwcHJvYWNoIHdvcmtzIGZvciBhIHNlcnZlciB0aGF0IGlzIFNTSC1hY2Nlc3NpYmxlIGFuZCBoYXMgUiBpbnN0YWxsZWQuIFRvIGJlIGFibGUgdG8gU1NIIGluIHdpdGhvdXQgc3RvcmluZyB5b3VyIHBhc3N3b3JkIGluIHBsYWludGV4dCBzb21ld2hlcmUsIHlvdSdsbCBuZWVkIHRvIHNldCB1cCBwdWJsaWMga2V5IGF1dGhlbnRpZmljYXRpb24uIFlvdSBkbyB0aGlzIGJ5IGNvcHlpbmcgeW91ciBwdWJsaWMga2V5IHRvIGB+Ly5zc2gvYXV0aG9yaXplZF9rZXlzYCBvbiB0aGUgc2VydmVyLiBJZiB5b3UndmUgYWxyZWFkeSBnZW5lcmF0ZWQgYSBwdWJsaWMga2V5IG9uIHlvdXIgbG9jYWwgbWFjaGluZSwgaXQgc2hvdWxkIGJlIGluIGB+Ly5zc2gvaWRfcnNhLnB1YmAgb3Igc29tZXRoaW5nIHNpbWlsYXIuIAoKIyMjIyBTdGVwcwpFbnRlciB0aGUgZm9sbG93aW5nIGluIHRoZSBUZXJtaW5hbC9jb21tYW5kIGxpbmUgb2YgeW91ciBsb2NhbCBjb21wdXRlci4gSWYgeW91IGFscmVhZHkgaGF2ZSBhbiBTU0gga2V5LCBza2lwIHRoaXM6CgpgYGBzaGVsbApzc2gta2V5Z2VuCmBgYAoKTm93LCBydW4KYGBgc2hlbGwKc3NoLWNvcHktaWQgWU9VUlVTRVJOQU1FQHJzdHVkaW8wMy5zYy51bmktbGVpcHppZy5kZQpgYGAKCkVudGVyIHlvdXIgcGFzc3dvcmQuIFRyeSBpZiBpdCB3b3JrZWQ6CgpgYGBzaGVsbApzc2ggWU9VUlVTRVJOQU1FQHJzdHVkaW8wMy5zYy51bmktbGVpcHppZy5kZQpgYGAKCklmIHlvdSdyZSBub3QgcHJvbXB0ZWQgZm9yIHlvdXIgcGFzc3dvcmQsIHlvdSdyZSBnb29kIHRvIGdvIQoKCiMjIyBTZW5kIGEgYnJtcyBtb2RlbCB0byB0aGUgc2VydmVyCkZvciB0aGlzIHRvIHdvcmssIHlvdSBuZWVkIHRoZSBmdXR1cmUgYW5kIHRoZSBicm1zIHBhY2thZ2UgdG8gYmUgaW5zdGFsbGVkIG9uIHRoZSBzZXJ2ZXIgYW5kIGxvY2FsbHkuCgpgYGB7cn0KbGlicmFyeShmdXR1cmUpICMgdGhpcyBpcyB0aGUgcGFja2FnZSB3ZSB1c2UgdG8gZmxleGlibHkgc2NhbGUgb3VyIHByb2Nlc3NpbmcKbGlicmFyeShicm1zKQoKIyMgU2V0IHVwIGFjY2VzcyB0byByZW1vdGUgbG9naW4gbm9kZQpwbGFuKGNsdXN0ZXIsIHdvcmtlcnMgPSByZXAoInhiNjI5ZnlwdUByc3R1ZGlvMDMuc2MudW5pLWxlaXB6aWcuZGUiLCAzKSkgIyB0aGlzIHRlbGxzIHRoZSBmdXR1cmUgcGFja2FnZSB0aGF0IHdlIHdhbnQgdG8gdXNlIGEgcmVtb3RlIHNlcnZlciBmb3IgcnVubmluZyBvdXIgZnV0dXJlIG9wZXJhdGlvbnMgYW5kIHdvdWxkIHJ1biBhdCBtb3N0IDMgbW9kZWxzIGluIHBhcmFsbGVsCnYgJTwtJSB7CiBjYXQoIlJlc29sdmluZy4uLlxuIikKIDMuMTQKfQp2CgpwcmlvcjEgPC0gcHJpb3Iobm9ybWFsKDAsMTApLCBjbGFzcyA9IGIpICsKICBwcmlvcihjYXVjaHkoMCwyKSwgY2xhc3MgPSBzZCkKCmZpdDEgJTwtJSBicm0oY291bnQgfiB6QWdlICsgekJhc2UgKyBUcnQgKyAoMXxwYXRpZW50KSwKICAgICAgICAgICAgZGF0YSA9IGVwaWxlcHN5LCAjIHlvdSBkb24ndCBuZWVkIHRvIHVwbG9hZCB0aGUgZGF0YSB0byB0aGUgc2VydmVyIGZpcnN0IAogICAgICAgICAgICBmYW1pbHkgPSBwb2lzc29uKCksIAogICAgICAgICAgICBmaWxlID0gImZpdDEiLCAjIHNtYXJ0IHRvIHNhdmUgdGhlIHJlc3VsdCBhcyBhIGZpbGUgbmFtZSBzbyB5b3UgY2FuIGxhdGVyIHF1aWNrbHkgcmV0cmlldmUgYW4gYWxyZWFkeSBmaXR0ZWQgbW9kZWwuIHlvdSBoYXZlIHRvIGNoYW5nZSB0aGlzIG5hbWUgZm9yIGV2ZXJ5IG5ldyBtb2RlbAogICAgICAgICAgICBmaWxlX3JlZml0ID0gIm9uX2NoYW5nZSIsICMgZG9uJ3QgdXNlIHRoZSBjYWNoZWQgdmVyc2lvbiBpZiBtb2RlbCBvciBkYXRhIGNoYW5nZWQsCiAgICAgICAgICAgIGNvcmVzID0gNCwgIyBhbHdheXMgbWFrZSB1c2Ugb2YgYmV0d2Vlbi1jaGFpbiBwYXJhbGxlbGlzYXRpb24gb24gdGhlIHNlcnZlcgogICAgICAgICAgICBwcmlvciA9IHByaW9yMSkKCmZpdDIgJTwtJSBicm0oY291bnQgfiB6QWdlICsgekJhc2UgKiBUcnQgKyAoMXxwYXRpZW50KSwKICAgICAgICAgICAgZGF0YSA9IGVwaWxlcHN5LCAjIHlvdSBkb24ndCBuZWVkIHRvIHVwbG9hZCB0aGUgZGF0YSB0byB0aGUgc2VydmVyIGZpcnN0IAogICAgICAgICAgICBmYW1pbHkgPSBwb2lzc29uKCksIAogICAgICAgICAgICBmaWxlID0gImZpdDIiLCAjIHNtYXJ0IHRvIHNhdmUgdGhlIHJlc3VsdCBhcyBhIGZpbGUgbmFtZSBzbyB5b3UgY2FuIGxhdGVyIHF1aWNrbHkgcmV0cmlldmUgYW4gYWxyZWFkeSBmaXR0ZWQgbW9kZWwuIHlvdSBoYXZlIHRvIGNoYW5nZSB0aGlzIG5hbWUgZm9yIGV2ZXJ5IG5ldyBtb2RlbAogICAgICAgICAgICBmaWxlX3JlZml0ID0gIm9uX2NoYW5nZSIsICMgZG9uJ3QgdXNlIHRoZSBjYWNoZWQgdmVyc2lvbiBpZiBtb2RlbCBvciBkYXRhIGNoYW5nZWQsCiAgICAgICAgICAgIGNvcmVzID0gNCwgIyBhbHdheXMgbWFrZSB1c2Ugb2YgYmV0d2Vlbi1jaGFpbiBwYXJhbGxlbGlzYXRpb24gb24gdGhlIHNlcnZlcgogICAgICAgICAgICBwcmlvciA9IHByaW9yMSkgJXNlZWQlIFRSVUUKYGBgCgpBcyB5b3UnbGwgc2VlIHdoZW4geW91IHJ1biB0aGlzIGNvZGUsIGl0IGltbWVkaWF0ZWx5IHJldHVybnMuIE9ubHkgd2hlbiB3ZSAidXNlIiB0aGUgdmFyaWFibGVzIGxhdGVyIG9uLCBkbyB3ZSBoYXZlIHRvIHdhaXQgZm9yIHRoZSByZXN1bHQgZnJvbSB0aGUgc2VydmVyLgoKYGBge3J9CmZpdDEKZml0MgpgYGAKCgoK</div>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("future_Leipzig_Rstudio03.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
